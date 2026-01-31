@@ -7,4 +7,5 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
+encoding_rs = "0.8"
 omp = "2.1.0"

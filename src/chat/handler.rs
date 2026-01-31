@@ -1,4 +1,5 @@
 use omp::types::colour::Colour;
+mod utils;
 
 pub struct MsgBuilder {
     pub text: Option<String>,
@@ -14,7 +15,7 @@ impl MsgBuilder {
     }
 
     pub fn text(mut self, text: &str) -> Self {
-        self.text = Some(text.into());
+        self.text =  Some(text.into());
         self
     }
 
@@ -35,6 +36,8 @@ impl MsgBuilder {
 
         self
     }
+
+
 }
 
 pub fn oi() {}
