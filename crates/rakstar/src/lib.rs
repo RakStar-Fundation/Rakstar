@@ -1,6 +1,8 @@
 pub mod chat;
 pub mod utils;
 pub mod command;
+pub mod player;
+pub mod events;
 
 #[macro_use]
 pub mod macros;
@@ -12,4 +14,6 @@ pub use command::{
 };
 
 pub use macros::Component;
+pub use player::Player;
+pub use events::EventHandler;
 
