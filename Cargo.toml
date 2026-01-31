@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/rakstar",
     "crates/bindings",
+    "examples/basic",
 ]
 
 [workspace.dependencies]

@@ -1,4 +1,4 @@
-use std::ffi::c_void;
+use std::ffi::{c_void, CString};
 use super::types::ComponentVersion;
 
 pub type ComponentCreateFn = unsafe extern "C" fn(
@@ -43,7 +43,32 @@ pub struct OmpApi {
     pub vehicle: *const c_void,
 }
 
-extern "C" {
-    #[link_name = "omp_initialize_capi"]
-    pub fn initialize_capi(api: *mut OmpApi) -> bool;
+#[cfg(unix)]
+pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
+    use std::ffi::CStr;
+    
+    let lib_path = CString::new("./components/$CAPI.so").unwrap();
+    let lib = libc::dlopen(lib_path.as_ptr(), libc::RTLD_LAZY | libc::RTLD_LOCAL);
+    
+    if lib.is_null() {
+        return false;
+    }
+
+    let create_fn_name = CString::new("Component_Create").unwrap();
+    let create_fn_ptr = libc::dlsym(lib, create_fn_name.as_ptr());
+    
+    if create_fn_ptr.is_null() {
+        libc::dlclose(lib);
+        return false;
+    }
+
+    (*api).component.create = Some(std::mem::transmute(create_fn_ptr));
+    
+    true
 }
+
+#[cfg(windows)]
+pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
+    false
+}
+

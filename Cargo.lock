@@ -3,8 +3,18 @@
 version = 4
 
 [[package]]
+name = "basic"
+version = "0.1.0"
+dependencies = [
+ "rakstar",
+]
+
+[[package]]
 name = "bindings"
 version = "0.1.0"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "bumpalo"
