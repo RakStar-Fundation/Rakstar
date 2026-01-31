@@ -1,0 +1,12 @@
+[package]
+name = "rakstar-gdk"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+encoding_rs = { workspace = true }
+omp = "2.1.0"
+bindings = { path = "../bindings" }

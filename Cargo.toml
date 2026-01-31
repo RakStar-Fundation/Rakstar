@@ -1,11 +1,9 @@
-[package]
-name = "rakstar-gdk"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "2"
+members = [
+    "crates/rakstar-gdk",
+    "crates/bindings",
+]
 
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
+[workspace.dependencies]
 encoding_rs = "0.8"
-omp = "2.1.0"

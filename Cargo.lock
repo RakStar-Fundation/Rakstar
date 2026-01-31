@@ -3,6 +3,10 @@
 version = 4
 
 [[package]]
+name = "bindings"
+version = "0.1.0"
+
+[[package]]
 name = "bumpalo"
 version = "3.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -129,6 +133,7 @@ checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
 name = "rakstar-gdk"
 version = "0.1.0"
 dependencies = [
+ "bindings",
  "encoding_rs",
  "omp",
 ]
