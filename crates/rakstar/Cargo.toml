@@ -1,5 +1,5 @@
 [package]
-name = "rakstar-gdk"
+name = "rakstar"
 version = "0.1.0"
 edition = "2024"
 
