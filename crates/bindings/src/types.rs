@@ -113,6 +113,14 @@ pub struct OnPlayerExitVehicle {
     pub player: *mut PlayerPtr,
     pub vehicle: *mut VehiclePtr,
 }
+#[repr(C)]
+pub struct OnDialogResponse {
+    pub player: *mut PlayerPtr,
+    pub dialogId: *mut i32,
+    pub response: *mut i32,
+    pub listItem: *mut i32,
+    pub inputText: *mut CAPIStringView,
+}
 
 pub type EventCallbackCommon = unsafe extern "C" fn(args: *mut EventArgsCommon) -> bool;
 

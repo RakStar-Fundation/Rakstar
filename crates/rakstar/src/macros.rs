@@ -222,6 +222,17 @@ macro_rules! entrypoint {
                 ::<$crate::Vehicle>(vehicle)
             );
 
+            $crate::handle_event!(
+                COMPONENT,
+                on_dialog_response,
+                $crate::bindings::types::EventArgs<$crate::bindings::types::OnDialogResponse>,
+                ::<$crate::Player>(player),
+                ::<_>(dialogId),
+                ::<_>(response),
+                ::<_>(listItem),
+                ::<String>(inputText)
+            );
+
 
             extern "C" fn on_ready() {
                 unsafe {
@@ -261,6 +272,7 @@ macro_rules! entrypoint {
                                         register_event!("onPlayerGiveDamage", on_player_give_damage);
                                         register_event!("onPlayerEnterVehicle", on_player_enter_vehicle);
                                         register_event!("onPlayerExitVehicle", on_player_exit_vehicle);
+                                        register_event!("onDialogResponse", on_dialog_response);
                                     }
                                 }
                                 None => {}

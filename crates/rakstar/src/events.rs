@@ -48,4 +48,14 @@ pub trait EventHandler {
     fn on_player_enter_vehicle(&mut self, _player: Player, _vehicle: Vehicle, _is_passenger: bool) {
     }
     fn on_player_exit_vehicle(&mut self, _player: Player, _vehicle: Vehicle) {}
+    fn on_dialog_response(
+        &mut self,
+        _player: Player,
+        _dialog_id: i32,
+        _response: i32,
+        _list_item: i32,
+        _input_text: String,
+    ) -> bool {
+        true
+    }
 }
