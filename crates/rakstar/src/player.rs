@@ -16,17 +16,11 @@ impl Player {
     }
 
     pub fn from_id(player_id: i32) -> Option<Self> {
-        unsafe {
-            let api = crate::macros::get_api()?;
-            let Some(func) = api.player.from_id else {
-                return None;
-            };
-            let ptr = func(player_id);
-            if ptr.is_null() {
-                return None;
-            }
-            Some(Self::from_ptr(ptr))
+        let ptr = call_api!(player.from_id => player_id; or None);
+        if ptr.is_null() {
+            return None;
         }
+        Some(Self::from_ptr(ptr))
     }
 
     pub fn get_id(&self) -> i32 {

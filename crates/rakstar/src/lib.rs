@@ -1,20 +1,22 @@
 pub mod chat;
-pub mod utils;
 pub mod command;
-pub mod player;
-pub mod vehicle;
 pub mod events;
+pub mod player;
+pub mod utils;
+pub mod vehicle;
 
 #[macro_use]
 pub mod macros;
 
+pub use bindings;
+
 pub use chat::handler::MsgBuilder;
 pub use command::{
-    CommandManager, Command, CommandHandler, CommandContext, 
-    ArgValidator, NumberConstraints, StringConstraints, PlayerConstraints
+    ArgValidator, Command, CommandContext, CommandHandler, CommandManager, NumberConstraints,
+    PlayerConstraints, StringConstraints,
 };
 
+pub use events::EventHandler;
 pub use macros::Component;
 pub use player::Player;
-pub use events::EventHandler;
 pub use vehicle::Vehicle;
