@@ -1,10 +1,13 @@
 #[macro_export]
 macro_rules! call_api {
-    ($field_path:ident . $field:ident => $($args:expr),*) => {
+    ($field_path:ident . $field:ident => $($args:expr),* ; or $default:expr) => {
         unsafe {
-            let api = $crate::macros::get_api()?;
+            let api = match $crate::macros::get_api() {
+                Some(api) => api,
+                None => return $default,
+            };
             let Some(func) = api.$field_path.$field else {
-                return None;
+                return $default;
             };
             func($($args),*)
         }

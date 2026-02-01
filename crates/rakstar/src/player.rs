@@ -35,7 +35,7 @@ impl Player {
 
     pub fn get_name(&self) -> Option<String> {
         let mut name_view = MaybeUninit::<CAPIStringView>::uninit();
-        call_api!(player.get_name => self.ptr, name_view.as_mut_ptr(); or return None);
+        call_api!(player.get_name => self.ptr, name_view.as_mut_ptr(); or None);
         unsafe {
             let name_view = name_view.assume_init();
             name_view.to_string()
@@ -56,7 +56,7 @@ impl Player {
 
     pub fn get_health(&self) -> f32 {
         let mut health = 0.0f32;
-        call_api!(player.get_health => self.ptr, &mut health as *mut f32; or return 0.0);
+        call_api!(player.get_health => self.ptr, &mut health as *mut f32; or 0.0);
         health
     }
 
@@ -66,7 +66,7 @@ impl Player {
 
     pub fn get_armour(&self) -> f32 {
         let mut armour = 0.0f32;
-        call_api!(player.get_armour => self.ptr, &mut armour as *mut f32; or return 0.0);
+        call_api!(player.get_armour => self.ptr, &mut armour as *mut f32; or 0.0);
         armour
     }
 
@@ -76,7 +76,7 @@ impl Player {
 
     pub fn get_pos(&self) -> (f32, f32, f32) {
         let (mut x, mut y, mut z) = (0.0f32, 0.0f32, 0.0f32);
-        call_api!(player.get_pos => self.ptr, &mut x as *mut f32, &mut y as *mut f32, &mut z as *mut f32; or return (0.0, 0.0, 0.0));
+        call_api!(player.get_pos => self.ptr, &mut x as *mut f32, &mut y as *mut f32, &mut z as *mut f32; or (0.0, 0.0, 0.0));
         (x, y, z)
     }
 
