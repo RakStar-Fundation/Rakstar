@@ -2,6 +2,7 @@ use crate::call_api;
 use bindings::types::{CAPIStringView, PlayerPtr};
 use std::mem::MaybeUninit;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Player {
     ptr: PlayerPtr,
 }
@@ -36,6 +37,11 @@ impl Player {
         }
     }
 
+    pub fn send_client_message(&self, color: u32, text: &str) -> bool {
+        let c_text = std::ffi::CString::new(text).unwrap();
+        call_api!(player.send_client_message => self.ptr, color, c_text.as_ptr() as *const u8; or false)
+    }
+
     pub fn kick(&self) -> bool {
         call_api!(player.kick => self.ptr; or false)
     }
@@ -49,9 +55,7 @@ impl Player {
     }
 
     pub fn get_health(&self) -> f32 {
-        let mut health = 0.0f32;
-        call_api!(player.get_health => self.ptr, &mut health as *mut f32; or 0.0);
-        health
+        call_api!(player.get_health => self.ptr; or 0.0)
     }
 
     pub fn set_health(&self, health: f32) -> bool {
@@ -59,13 +63,11 @@ impl Player {
     }
 
     pub fn get_armour(&self) -> f32 {
-        let mut armour = 0.0f32;
-        call_api!(player.get_armour => self.ptr, &mut armour as *mut f32; or 0.0);
-        armour
+        call_api!(player.get_armor => self.ptr; or 0.0)
     }
 
     pub fn set_armour(&self, armour: f32) -> bool {
-        call_api!(player.set_armour => self.ptr, armour; or false)
+        call_api!(player.set_armor => self.ptr, armour; or false)
     }
 
     pub fn get_pos(&self) -> (f32, f32, f32) {
@@ -116,6 +118,10 @@ impl Player {
 
     pub fn is_in_any_vehicle(&self) -> bool {
         call_api!(player.is_in_any_vehicle => self.ptr; or false)
+    }
+
+    pub fn is_spawned(&self) -> bool {
+        call_api!(player.is_spawned => self.ptr; or false)
     }
 
     pub fn get_vehicle_id(&self) -> i32 {

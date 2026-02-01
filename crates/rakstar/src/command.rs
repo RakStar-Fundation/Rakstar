@@ -1,6 +1,6 @@
 use std::{collections::HashMap, str::FromStr};
 
-use omp::players::Player;
+use crate::Player;
 
 pub type CommandHandler = fn(context: CommandContext) -> Result<(), String>;
 
@@ -166,7 +166,7 @@ impl PlayerConstraints {
         }
 
         if let Some(ref nick) = self.nick {
-            if !player.get_name().contains(nick) {
+            if !player.get_name().unwrap_or_default().contains(nick) {
                 return Err(format!("Player name must contain '{}'", nick));
             }
         }
@@ -408,17 +408,14 @@ impl CommandManager {
             for (index, validator) in &command.validators {
                 let Some(arg) = args.get(*index as usize) else {
                     player.send_client_message(
-                        omp::types::colour::Colour::from_rgba(0xFF0000FF),
+                        0xFF0000FF,
                         &format!("Missing argument at position {}", index),
                     );
                     return;
                 };
 
                 if let Err(msg) = validator.validate(arg) {
-                    player.send_client_message(
-                        omp::types::colour::Colour::from_rgba(0xFF0000FF),
-                        &msg,
-                    );
+                    player.send_client_message(0xFF0000FF, &msg);
                     return;
                 }
             }
@@ -434,7 +431,7 @@ impl CommandManager {
             ));
 
             if let Err(msg) = result {
-                player.send_client_message(omp::types::colour::Colour::from_rgba(0xFF0000FF), &msg);
+                player.send_client_message(0xFF0000FF, &msg);
                 return;
             }
 

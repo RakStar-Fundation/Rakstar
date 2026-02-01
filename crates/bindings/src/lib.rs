@@ -1,15 +1,15 @@
 pub mod actor;
+pub mod api;
 pub mod checkpoint;
 pub mod player;
-pub mod vehicle;
 pub mod types;
-pub mod api;
+pub mod vehicle;
 
-pub use api::{OmpApi, ComponentApi, PlayerApi, VehicleApi, EventApi, initialize_capi};
+pub use api::{initialize_capi, ComponentApi, EventApi, OmpApi, VehicleApi};
 pub use types::ComponentVersion;
 
-pub use types::*;
-pub use player::PlayerAPI;
-pub use vehicle::VehicleAPI;
 pub use actor::ActorAPI;
 pub use checkpoint::CheckpointAPI;
+pub use player::PlayerAPI;
+pub use types::*;
+pub use vehicle::VehicleAPI;

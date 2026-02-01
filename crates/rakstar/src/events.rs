@@ -45,6 +45,7 @@ pub trait EventHandler {
         _bodypart: i32,
     ) {
     }
-    fn on_player_enter_vehicle(&mut self, _player: Player, vehicle: Vehicle, _is_passenger: bool) {}
-    fn on_player_exit_vehicle(&mut self, _player: Player, vehicle: Vehicle) {}
+    fn on_player_enter_vehicle(&mut self, _player: Player, _vehicle: Vehicle, _is_passenger: bool) {
+    }
+    fn on_player_exit_vehicle(&mut self, _player: Player, _vehicle: Vehicle) {}
 }

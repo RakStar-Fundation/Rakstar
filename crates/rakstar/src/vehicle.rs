@@ -1,6 +1,5 @@
 use crate::call_api;
-use bindings::{CAPIStringView, VehiclePtr};
-use std::mem::MaybeUninit;
+use bindings::types::VehiclePtr;
 
 #[repr(transparent)]
 pub struct Vehicle {

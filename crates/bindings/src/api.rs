@@ -1,4 +1,5 @@
-use super::types::{CAPIStringView, ComponentVersion, PlayerPtr, VehiclePtr};
+use super::types::{ComponentVersion, VehiclePtr};
+use crate::player::PlayerAPI;
 use std::ffi::{c_void, CString};
 
 pub type ComponentCreateFn = unsafe extern "C" fn(
@@ -9,37 +10,6 @@ pub type ComponentCreateFn = unsafe extern "C" fn(
     on_reset: *const c_void,
     on_free: *const c_void,
 ) -> *mut c_void;
-
-pub type PlayerGetNameFn =
-    unsafe extern "C" fn(player: PlayerPtr, name: *mut CAPIStringView) -> i32;
-
-pub type PlayerFromIdFn = unsafe extern "C" fn(playerid: i32) -> PlayerPtr;
-pub type PlayerGetIdFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
-pub type PlayerKickFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
-pub type PlayerBanFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
-pub type PlayerSpawnFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
-pub type PlayerGetHealthFn = unsafe extern "C" fn(player: PlayerPtr, health: *mut f32);
-pub type PlayerSetHealthFn = unsafe extern "C" fn(player: PlayerPtr, health: f32) -> bool;
-pub type PlayerGetArmourFn = unsafe extern "C" fn(player: PlayerPtr, armour: *mut f32);
-pub type PlayerSetArmourFn = unsafe extern "C" fn(player: PlayerPtr, armour: f32) -> bool;
-pub type PlayerGetPosFn =
-    unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32);
-pub type PlayerSetPosFn = unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> bool;
-pub type PlayerGetInteriorFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
-pub type PlayerSetInteriorFn = unsafe extern "C" fn(player: PlayerPtr, interior: i32) -> bool;
-pub type PlayerGetVirtualWorldFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
-pub type PlayerSetVirtualWorldFn = unsafe extern "C" fn(player: PlayerPtr, world: i32) -> bool;
-pub type PlayerResetWeaponsFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
-pub type PlayerGiveWeaponFn =
-    unsafe extern "C" fn(player: PlayerPtr, weapon: i32, ammo: i32) -> bool;
-pub type PlayerPutInVehicleFn =
-    unsafe extern "C" fn(player: PlayerPtr, vehicle: VehiclePtr, seat: i32) -> bool;
-pub type PlayerRemoveFromVehicleFn = unsafe extern "C" fn(player: PlayerPtr, force: bool) -> bool;
-pub type PlayerIsInVehicleFn = unsafe extern "C" fn(player: PlayerPtr, vehicle: VehiclePtr) -> bool;
-pub type PlayerIsInAnyVehicleFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
-pub type PlayerGetVehicleIdFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
-pub type PlayerGetFacingAngleFn = unsafe extern "C" fn(player: PlayerPtr) -> f32;
-pub type PlayerSetFacingAngleFn = unsafe extern "C" fn(player: PlayerPtr, angle: f32) -> bool;
 
 pub type VehicleCreateFn = unsafe extern "C" fn(
     model: i32,
@@ -80,35 +50,6 @@ pub struct ComponentApi {
 }
 
 #[repr(C)]
-pub struct PlayerApi {
-    pub get_name: Option<PlayerGetNameFn>,
-    pub from_id: Option<PlayerFromIdFn>,
-    pub get_id: Option<PlayerGetIdFn>,
-    pub kick: Option<PlayerKickFn>,
-    pub ban: Option<PlayerBanFn>,
-    pub spawn: Option<PlayerSpawnFn>,
-    pub get_health: Option<PlayerGetHealthFn>,
-    pub set_health: Option<PlayerSetHealthFn>,
-    pub get_armour: Option<PlayerGetArmourFn>,
-    pub set_armour: Option<PlayerSetArmourFn>,
-    pub get_pos: Option<PlayerGetPosFn>,
-    pub set_pos: Option<PlayerSetPosFn>,
-    pub get_interior: Option<PlayerGetInteriorFn>,
-    pub set_interior: Option<PlayerSetInteriorFn>,
-    pub get_virtual_world: Option<PlayerGetVirtualWorldFn>,
-    pub set_virtual_world: Option<PlayerSetVirtualWorldFn>,
-    pub reset_weapons: Option<PlayerResetWeaponsFn>,
-    pub give_weapon: Option<PlayerGiveWeaponFn>,
-    pub put_in_vehicle: Option<PlayerPutInVehicleFn>,
-    pub remove_from_vehicle: Option<PlayerRemoveFromVehicleFn>,
-    pub is_in_vehicle: Option<PlayerIsInVehicleFn>,
-    pub is_in_any_vehicle: Option<PlayerIsInAnyVehicleFn>,
-    pub get_vehicle_id: Option<PlayerGetVehicleIdFn>,
-    pub get_facing_angle: Option<PlayerGetFacingAngleFn>,
-    pub set_facing_angle: Option<PlayerSetFacingAngleFn>,
-}
-
-#[repr(C)]
 pub struct VehicleApi {
     pub create: Option<VehicleCreateFn>,
     pub destroy: Option<VehicleDestroyFn>,
@@ -137,7 +78,7 @@ pub struct OmpApi {
     pub checkpoint: *const c_void,
     pub race_checkpoint: *const c_void,
     pub class: *const c_void,
-    pub player: PlayerApi,
+    pub player: PlayerAPI,
     pub component: ComponentApi,
     pub config: *const c_void,
     pub core: *const c_void,
@@ -199,8 +140,8 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).player.spawn, "Player_Spawn");
     load_fn!(lib, api, (*api).player.get_health, "Player_GetHealth");
     load_fn!(lib, api, (*api).player.set_health, "Player_SetHealth");
-    load_fn!(lib, api, (*api).player.get_armour, "Player_GetArmour");
-    load_fn!(lib, api, (*api).player.set_armour, "Player_SetArmour");
+    load_fn!(lib, api, (*api).player.get_armor, "Player_GetArmour");
+    load_fn!(lib, api, (*api).player.set_armor, "Player_SetArmour");
     load_fn!(lib, api, (*api).player.get_pos, "Player_GetPos");
     load_fn!(lib, api, (*api).player.set_pos, "Player_SetPos");
     load_fn!(lib, api, (*api).player.get_interior, "Player_GetInterior");
@@ -256,6 +197,7 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).player.set_facing_angle,
         "Player_SetFacingAngle"
     );
+    load_fn!(lib, api, (*api).player.is_spawned, "Player_IsSpawned");
 
     load_fn!(lib, api, (*api).vehicle.create, "Vehicle_Create");
     load_fn!(lib, api, (*api).vehicle.destroy, "Vehicle_Destroy");
