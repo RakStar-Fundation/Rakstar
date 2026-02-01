@@ -28,12 +28,12 @@ impl Player {
         call_api!(player.get_id => self.ptr; or -1)
     }
 
-    pub fn get_name(&self) -> Option<String> {
+    pub fn get_name(&self) -> String {
         let mut name_view = MaybeUninit::<CAPIStringView>::uninit();
-        call_api!(player.get_name => self.ptr, name_view.as_mut_ptr(); or None);
+        call_api!(player.get_name => self.ptr, name_view.as_mut_ptr(); or String::new());
         unsafe {
             let name_view = name_view.assume_init();
-            name_view.to_string()
+            name_view.to_string().unwrap()
         }
     }
 

@@ -166,7 +166,7 @@ impl PlayerConstraints {
         }
 
         if let Some(ref nick) = self.nick {
-            if !player.get_name().unwrap().contains(nick) {
+            if !player.get_name().contains(nick) {
                 return Err(format!("Player name must contain '{}'", nick));
             }
         }
