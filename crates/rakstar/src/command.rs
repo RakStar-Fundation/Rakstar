@@ -207,16 +207,6 @@ impl PlayerConstraints {
     }
 }
 
-struct ValidatorMessage {
-    msg: String,
-}
-
-impl From<&str> for ValidatorMessage {
-    fn from(s: &str) -> ValidatorMessage {
-        ValidatorMessage { msg: s.into() }
-    }
-}
-
 pub struct CommandBuilder {
     identifier: String,
     handler: Option<CommandHandler>,

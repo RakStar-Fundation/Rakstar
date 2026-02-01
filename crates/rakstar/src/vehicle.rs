@@ -66,9 +66,7 @@ impl Vehicle {
     }
 
     pub fn get_rotation(&self) -> f32 {
-        let mut rotation = 0.0f32;
-        call_api!(vehicle.get_rotation => self.ptr, &mut rotation as *mut f32; or 0.0);
-        rotation
+        call_api!(vehicle.get_rotation => self.ptr; or 0.0)
     }
 
     pub fn set_rotation(&self, rotation: f32) -> bool {

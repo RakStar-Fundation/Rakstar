@@ -5,7 +5,7 @@ pub mod player;
 pub mod types;
 pub mod vehicle;
 
-pub use api::{initialize_capi, ComponentApi, EventApi, OmpApi, VehicleApi};
+pub use api::{initialize_capi, ComponentApi, EventApi, OmpApi};
 pub use types::ComponentVersion;
 
 pub use actor::ActorAPI;

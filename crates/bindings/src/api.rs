@@ -1,5 +1,6 @@
 use super::types::{ComponentVersion, VehiclePtr};
 use crate::player::PlayerAPI;
+use crate::vehicle::VehicleAPI;
 use std::ffi::{c_void, CString};
 
 pub type ComponentCreateFn = unsafe extern "C" fn(
@@ -11,34 +12,6 @@ pub type ComponentCreateFn = unsafe extern "C" fn(
     on_free: *const c_void,
 ) -> *mut c_void;
 
-pub type VehicleCreateFn = unsafe extern "C" fn(
-    model: i32,
-    x: f32,
-    y: f32,
-    z: f32,
-    rotation: f32,
-    color1: i32,
-    color2: i32,
-    respawn_delay: i32,
-    add_siren: bool,
-    id: *mut i32,
-) -> VehiclePtr;
-pub type VehicleDestroyFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> bool;
-pub type VehicleGetIdFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> i32;
-pub type VehicleGetPosFn =
-    unsafe extern "C" fn(vehicle: VehiclePtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
-pub type VehicleSetPosFn =
-    unsafe extern "C" fn(vehicle: VehiclePtr, x: f32, y: f32, z: f32) -> bool;
-pub type VehicleGetRotationFn = unsafe extern "C" fn(vehicle: VehiclePtr, rotation: *mut f32);
-pub type VehicleSetRotationFn = unsafe extern "C" fn(vehicle: VehiclePtr, rotation: f32) -> bool;
-pub type VehicleGetHealthFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> f32;
-pub type VehicleSetHealthFn = unsafe extern "C" fn(vehicle: VehiclePtr, health: f32) -> bool;
-pub type VehicleGetModelFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> i32;
-pub type VehicleGetInteriorFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> i32;
-pub type VehicleSetInteriorFn = unsafe extern "C" fn(vehicle: VehiclePtr, interior: i32) -> bool;
-pub type VehicleGetVirtualWorldFn = unsafe extern "C" fn(vehicle: VehiclePtr) -> i32;
-pub type VehicleSetVirtualWorldFn = unsafe extern "C" fn(vehicle: VehiclePtr, world: i32) -> bool;
-
 pub type EventCallback = unsafe extern "C" fn() -> bool;
 
 pub type EventAddHandlerFn =
@@ -47,24 +20,6 @@ pub type EventAddHandlerFn =
 #[repr(C)]
 pub struct ComponentApi {
     pub create: Option<ComponentCreateFn>,
-}
-
-#[repr(C)]
-pub struct VehicleApi {
-    pub create: Option<VehicleCreateFn>,
-    pub destroy: Option<VehicleDestroyFn>,
-    pub get_id: Option<VehicleGetIdFn>,
-    pub get_pos: Option<VehicleGetPosFn>,
-    pub set_pos: Option<VehicleSetPosFn>,
-    pub get_rotation: Option<VehicleGetRotationFn>,
-    pub set_rotation: Option<VehicleSetRotationFn>,
-    pub get_health: Option<VehicleGetHealthFn>,
-    pub set_health: Option<VehicleSetHealthFn>,
-    pub get_model: Option<VehicleGetModelFn>,
-    pub get_interior: Option<VehicleGetInteriorFn>,
-    pub set_interior: Option<VehicleSetInteriorFn>,
-    pub get_virtual_world: Option<VehicleGetVirtualWorldFn>,
-    pub set_virtual_world: Option<VehicleSetVirtualWorldFn>,
 }
 
 #[repr(C)]
@@ -97,7 +52,7 @@ pub struct OmpApi {
     pub player_text_draw: *const c_void,
     pub text_label: *const c_void,
     pub player_text_label: *const c_void,
-    pub vehicle: VehicleApi,
+    pub vehicle: VehicleAPI,
 }
 
 unsafe impl Send for OmpApi {}
@@ -204,8 +159,8 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).vehicle.get_id, "Vehicle_GetID");
     load_fn!(lib, api, (*api).vehicle.get_pos, "Vehicle_GetPos");
     load_fn!(lib, api, (*api).vehicle.set_pos, "Vehicle_SetPos");
-    load_fn!(lib, api, (*api).vehicle.get_rotation, "Vehicle_GetRotation");
-    load_fn!(lib, api, (*api).vehicle.set_rotation, "Vehicle_SetRotation");
+    load_fn!(lib, api, (*api).vehicle.get_rotation, "Vehicle_GetZAngle");
+    load_fn!(lib, api, (*api).vehicle.set_rotation, "Vehicle_SetZAngle");
     load_fn!(lib, api, (*api).vehicle.get_health, "Vehicle_GetHealth");
     load_fn!(lib, api, (*api).vehicle.set_health, "Vehicle_SetHealth");
     load_fn!(lib, api, (*api).vehicle.get_model, "Vehicle_GetModel");
