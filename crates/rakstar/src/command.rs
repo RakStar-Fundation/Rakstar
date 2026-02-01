@@ -166,7 +166,7 @@ impl PlayerConstraints {
         }
 
         if let Some(ref nick) = self.nick {
-            if !player.get_name().unwrap_or_default().contains(nick) {
+            if !player.get_name().unwrap().contains(nick) {
                 return Err(format!("Player name must contain '{}'", nick));
             }
         }
@@ -204,6 +204,16 @@ impl PlayerConstraints {
     pub fn with_nick(mut self, nick: &str) -> Self {
         self.nick = Some(nick.into());
         self
+    }
+}
+
+struct ValidatorMessage {
+    msg: String,
+}
+
+impl From<&str> for ValidatorMessage {
+    fn from(s: &str) -> ValidatorMessage {
+        ValidatorMessage { msg: s.into() }
     }
 }
 

@@ -135,4 +135,47 @@ impl Player {
     pub fn set_facing_angle(&self, angle: f32) -> bool {
         call_api!(player.set_facing_angle => self.ptr, angle; or false)
     }
+
+    pub fn show_dialog(
+        &self,
+        dialog_id: i32,
+        style: DialogStyle,
+        title: &str,
+        body: &str,
+        button1: &str,
+        button2: &str,
+    ) -> bool {
+        let c_title = std::ffi::CString::new(title).unwrap();
+        let c_body = std::ffi::CString::new(body).unwrap();
+        let c_button1 = std::ffi::CString::new(button1).unwrap();
+        let c_button2 = std::ffi::CString::new(button2).unwrap();
+
+        unsafe {
+            if let Some(api) = crate::macros::get_api() {
+                if let Some(show) = api.dialog.show {
+                    return show(
+                        self.ptr,
+                        dialog_id,
+                        style as i32,
+                        c_title.as_ptr(),
+                        c_body.as_ptr(),
+                        c_button1.as_ptr(),
+                        c_button2.as_ptr(),
+                    );
+                }
+            }
+        }
+        false
+    }
+}
+
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DialogStyle {
+    MsgBox = 0,
+    Input = 1,
+    List = 2,
+    Password = 3,
+    TabList = 4,
+    TabListHeaders = 5,
 }

@@ -1,6 +1,6 @@
-use super::types::{ComponentVersion, VehiclePtr};
-use crate::player::PlayerAPI;
+use super::types::ComponentVersion;
 use crate::vehicle::VehicleAPI;
+use crate::{core::CoreAPI, player::PlayerAPI};
 use std::ffi::{c_void, CString};
 
 pub type ComponentCreateFn = unsafe extern "C" fn(
@@ -36,10 +36,10 @@ pub struct OmpApi {
     pub player: PlayerAPI,
     pub component: ComponentApi,
     pub config: *const c_void,
-    pub core: *const c_void,
+    pub core: CoreAPI,
     pub npc: *const c_void,
     pub custom_model: *const c_void,
-    pub dialog: *const c_void,
+    pub dialog: crate::dialog::DialogAPI,
     pub event: EventApi,
     pub gang_zone: *const c_void,
     pub menu: *const c_void,
@@ -86,6 +86,8 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     }
 
     (*api).component.create = Some(std::mem::transmute(create_fn_ptr));
+
+    load_fn!(lib, api, (*api).core.max_players, "Core_MaxPlayers");
 
     load_fn!(lib, api, (*api).player.get_name, "Player_GetName");
     load_fn!(lib, api, (*api).player.from_id, "Player_FromID");
@@ -178,6 +180,9 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).vehicle.set_virtual_world,
         "Vehicle_SetVirtualWorld"
     );
+
+    load_fn!(lib, api, (*api).dialog.show, "Dialog_Show");
+    load_fn!(lib, api, (*api).dialog.hide, "Dialog_Hide");
 
     load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
 

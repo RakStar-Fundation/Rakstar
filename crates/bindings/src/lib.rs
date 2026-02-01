@@ -1,6 +1,8 @@
 pub mod actor;
 pub mod api;
 pub mod checkpoint;
+pub mod core;
+pub mod dialog;
 pub mod player;
 pub mod types;
 pub mod vehicle;
