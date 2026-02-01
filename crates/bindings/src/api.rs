@@ -72,6 +72,16 @@ pub struct OmpApi {
 unsafe impl Send for OmpApi {}
 unsafe impl Sync for OmpApi {}
 
+macro_rules! load_fn {
+    ($lib:expr, $api:expr, $field:expr, $name:expr) => {
+        let fn_name = CString::new($name).unwrap();
+        let fn_ptr = libc::dlsym($lib, fn_name.as_ptr());
+        if !fn_ptr.is_null() {
+            $field = Some(std::mem::transmute(fn_ptr));
+        }
+    };
+}
+
 #[cfg(unix)]
 pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     let lib_path = CString::new("./components/$CAPI.so").unwrap();
@@ -91,26 +101,9 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
 
     (*api).component.create = Some(std::mem::transmute(create_fn_ptr));
     
-    let get_name_fn_name = CString::new("Player_GetName").unwrap();
-    let get_name_fn_ptr = libc::dlsym(lib, get_name_fn_name.as_ptr());
-    
-    if !get_name_fn_ptr.is_null() {
-        (*api).player.get_name = Some(std::mem::transmute(get_name_fn_ptr));
-    }
-    
-    let from_id_fn_name = CString::new("Player_FromID").unwrap();
-    let from_id_fn_ptr = libc::dlsym(lib, from_id_fn_name.as_ptr());
-    
-    if !from_id_fn_ptr.is_null() {
-        (*api).player.from_id = Some(std::mem::transmute(from_id_fn_ptr));
-    }
-    
-    let add_handler_fn_name = CString::new("Event_AddHandler").unwrap();
-    let add_handler_fn_ptr = libc::dlsym(lib, add_handler_fn_name.as_ptr());
-    
-    if !add_handler_fn_ptr.is_null() {
-        (*api).event.add_handler = Some(std::mem::transmute(add_handler_fn_ptr));
-    }
+    load_fn!(lib, api, (*api).player.get_name, "Player_GetName");
+    load_fn!(lib, api, (*api).player.from_id, "Player_FromID");
+    load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
     
     true
 }
