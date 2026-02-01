@@ -16,6 +16,22 @@ pub type PlayerGetNameFn = unsafe extern "C" fn(
 ) -> i32;
 
 pub type PlayerFromIdFn = unsafe extern "C" fn(playerid: i32) -> PlayerPtr;
+pub type PlayerGetIdFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type PlayerKickFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type PlayerBanFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type PlayerSpawnFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type PlayerGetHealthFn = unsafe extern "C" fn(player: PlayerPtr, health: *mut f32);
+pub type PlayerSetHealthFn = unsafe extern "C" fn(player: PlayerPtr, health: f32) -> bool;
+pub type PlayerGetArmourFn = unsafe extern "C" fn(player: PlayerPtr, armour: *mut f32);
+pub type PlayerSetArmourFn = unsafe extern "C" fn(player: PlayerPtr, armour: f32) -> bool;
+pub type PlayerGetPosFn = unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32);
+pub type PlayerSetPosFn = unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> bool;
+pub type PlayerGetInteriorFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type PlayerSetInteriorFn = unsafe extern "C" fn(player: PlayerPtr, interior: i32) -> bool;
+pub type PlayerGetVirtualWorldFn = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type PlayerSetVirtualWorldFn = unsafe extern "C" fn(player: PlayerPtr, world: i32) -> bool;
+pub type PlayerResetWeaponsFn = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type PlayerGiveWeaponFn = unsafe extern "C" fn(player: PlayerPtr, weapon: i32, ammo: i32) -> bool;
 
 pub type EventCallback = unsafe extern "C" fn() -> bool;
 
@@ -34,6 +50,22 @@ pub struct ComponentApi {
 pub struct PlayerApi {
     pub get_name: Option<PlayerGetNameFn>,
     pub from_id: Option<PlayerFromIdFn>,
+    pub get_id: Option<PlayerGetIdFn>,
+    pub kick: Option<PlayerKickFn>,
+    pub ban: Option<PlayerBanFn>,
+    pub spawn: Option<PlayerSpawnFn>,
+    pub get_health: Option<PlayerGetHealthFn>,
+    pub set_health: Option<PlayerSetHealthFn>,
+    pub get_armour: Option<PlayerGetArmourFn>,
+    pub set_armour: Option<PlayerSetArmourFn>,
+    pub get_pos: Option<PlayerGetPosFn>,
+    pub set_pos: Option<PlayerSetPosFn>,
+    pub get_interior: Option<PlayerGetInteriorFn>,
+    pub set_interior: Option<PlayerSetInteriorFn>,
+    pub get_virtual_world: Option<PlayerGetVirtualWorldFn>,
+    pub set_virtual_world: Option<PlayerSetVirtualWorldFn>,
+    pub reset_weapons: Option<PlayerResetWeaponsFn>,
+    pub give_weapon: Option<PlayerGiveWeaponFn>,
 }
 
 #[repr(C)]
@@ -103,6 +135,22 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     
     load_fn!(lib, api, (*api).player.get_name, "Player_GetName");
     load_fn!(lib, api, (*api).player.from_id, "Player_FromID");
+    load_fn!(lib, api, (*api).player.get_id, "Player_GetID");
+    load_fn!(lib, api, (*api).player.kick, "Player_Kick");
+    load_fn!(lib, api, (*api).player.ban, "Player_Ban");
+    load_fn!(lib, api, (*api).player.spawn, "Player_Spawn");
+    load_fn!(lib, api, (*api).player.get_health, "Player_GetHealth");
+    load_fn!(lib, api, (*api).player.set_health, "Player_SetHealth");
+    load_fn!(lib, api, (*api).player.get_armour, "Player_GetArmour");
+    load_fn!(lib, api, (*api).player.set_armour, "Player_SetArmour");
+    load_fn!(lib, api, (*api).player.get_pos, "Player_GetPos");
+    load_fn!(lib, api, (*api).player.set_pos, "Player_SetPos");
+    load_fn!(lib, api, (*api).player.get_interior, "Player_GetInterior");
+    load_fn!(lib, api, (*api).player.set_interior, "Player_SetInterior");
+    load_fn!(lib, api, (*api).player.get_virtual_world, "Player_GetVirtualWorld");
+    load_fn!(lib, api, (*api).player.set_virtual_world, "Player_SetVirtualWorld");
+    load_fn!(lib, api, (*api).player.reset_weapons, "Player_ResetWeapons");
+    load_fn!(lib, api, (*api).player.give_weapon, "Player_GiveWeapon");
     load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
     
     true
