@@ -2,6 +2,7 @@ pub mod chat;
 pub mod utils;
 pub mod command;
 pub mod player;
+pub mod vehicle;
 pub mod events;
 
 #[macro_use]
@@ -16,4 +17,4 @@ pub use command::{
 pub use macros::Component;
 pub use player::Player;
 pub use events::EventHandler;
-
+pub use vehicle::Vehicle;
