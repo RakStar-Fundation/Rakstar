@@ -1,3 +1,16 @@
+#[macro_export]
+macro_rules! call_api {
+    ($field_path:ident . $field:ident => $($args:expr),*) => {
+        unsafe {
+            let api = $crate::macros::get_api()?;
+            let Some(func) = api.$field_path.$field else {
+                return None;
+            };
+            func($($args),*)
+        }
+    };
+}
+
 use std::sync::OnceLock;
 
 static API: OnceLock<bindings::api::OmpApi> = OnceLock::new();
