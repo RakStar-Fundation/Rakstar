@@ -1,3 +1,4 @@
+#![allow(non_snake_case, non_camel_case_types)]
 use crate::types::*;
 
 pub type Player_SetSpawnInfo_t = unsafe extern "C" fn(
@@ -35,25 +36,13 @@ pub type Player_GetSpawnInfo_t = unsafe extern "C" fn(
 pub type Player_FromID_t = unsafe extern "C" fn(playerid: i32) -> PlayerPtr;
 pub type Player_GetID_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
 
-pub type Player_SendClientMessage_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    color: u32,
-    text: *const u8,
-) -> bool;
+pub type Player_SendClientMessage_t =
+    unsafe extern "C" fn(player: PlayerPtr, color: u32, text: *const u8) -> bool;
 
-pub type Player_SetPos_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-) -> bool;
+pub type Player_SetPos_t = unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> bool;
 
-pub type Player_GetPos_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: *mut f32,
-    y: *mut f32,
-    z: *mut f32,
-) -> bool;
+pub type Player_GetPos_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
 
 pub type Player_SetHealth_t = unsafe extern "C" fn(player: PlayerPtr, health: f32) -> bool;
 pub type Player_GetHealth_t = unsafe extern "C" fn(player: PlayerPtr) -> f32;
@@ -75,17 +64,15 @@ pub type Player_SetTeam_t = unsafe extern "C" fn(player: PlayerPtr, team: i32) -
 pub type Player_GetTeam_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
 
 pub type Player_SetName_t = unsafe extern "C" fn(player: PlayerPtr, name: *const u8) -> i32;
-pub type Player_GetName_t = unsafe extern "C" fn(player: PlayerPtr, name: *mut CAPIStringView) -> i32;
+pub type Player_GetName_t =
+    unsafe extern "C" fn(player: PlayerPtr, name: *mut CAPIStringView) -> i32;
 
 pub type Player_GiveMoney_t = unsafe extern "C" fn(player: PlayerPtr, amount: i32) -> bool;
 pub type Player_GetMoney_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
 pub type Player_ResetMoney_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 
-pub type Player_GiveWeapon_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    weapon: i32,
-    ammo: i32,
-) -> bool;
+pub type Player_GiveWeapon_t =
+    unsafe extern "C" fn(player: PlayerPtr, weapon: i32, ammo: i32) -> bool;
 
 pub type Player_RemoveWeapon_t = unsafe extern "C" fn(player: PlayerPtr, weapon: i32) -> bool;
 pub type Player_ResetWeapons_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
@@ -117,11 +104,8 @@ pub type Player_GetIp_t = unsafe extern "C" fn(player: PlayerPtr, ip: *mut CAPIS
 pub type Player_GetRawIp_t = unsafe extern "C" fn(player: PlayerPtr) -> u32;
 
 pub type Player_SetTime_t = unsafe extern "C" fn(player: PlayerPtr, hour: i32, minute: i32) -> bool;
-pub type Player_GetTime_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    hour: *mut i32,
-    minute: *mut i32,
-) -> bool;
+pub type Player_GetTime_t =
+    unsafe extern "C" fn(player: PlayerPtr, hour: *mut i32, minute: *mut i32) -> bool;
 
 pub type Player_SetWeather_t = unsafe extern "C" fn(player: PlayerPtr, weather: i32) -> bool;
 pub type Player_GetWeather_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
@@ -131,46 +115,30 @@ pub type Player_GetGravity_t = unsafe extern "C" fn(player: PlayerPtr) -> f32;
 
 pub type Player_Spawn_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 
-pub type Player_SetVelocity_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-) -> bool;
+pub type Player_SetVelocity_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> bool;
 
-pub type Player_GetVelocity_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: *mut f32,
-    y: *mut f32,
-    z: *mut f32,
-) -> bool;
+pub type Player_GetVelocity_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
 
-pub type Player_IsInVehicle_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    targetVehicle: VehiclePtr,
-) -> bool;
+pub type Player_IsInVehicle_t =
+    unsafe extern "C" fn(player: PlayerPtr, targetVehicle: VehiclePtr) -> bool;
 
 pub type Player_IsInAnyVehicle_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 pub type Player_GetVehicleID_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
 pub type Player_GetVehicleSeat_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
 
-pub type Player_PutInVehicle_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    vehicle: VehiclePtr,
-    seat: i32,
-) -> bool;
+pub type Player_PutInVehicle_t =
+    unsafe extern "C" fn(player: PlayerPtr, vehicle: VehiclePtr, seat: i32) -> bool;
 
 pub type Player_RemoveFromVehicle_t = unsafe extern "C" fn(player: PlayerPtr, force: bool) -> bool;
 
-pub type Player_ToggleControllable_t = unsafe extern "C" fn(player: PlayerPtr, enable: bool) -> bool;
+pub type Player_ToggleControllable_t =
+    unsafe extern "C" fn(player: PlayerPtr, enable: bool) -> bool;
 pub type Player_IsControllable_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 
-pub type Player_ShowGameText_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    text: *const u8,
-    time: i32,
-    style: i32,
-) -> bool;
+pub type Player_ShowGameText_t =
+    unsafe extern "C" fn(player: PlayerPtr, text: *const u8, time: i32, style: i32) -> bool;
 
 pub type Player_HideGameText_t = unsafe extern "C" fn(player: PlayerPtr, style: i32) -> bool;
 
@@ -189,27 +157,14 @@ pub type Player_ApplyAnimation_t = unsafe extern "C" fn(
 
 pub type Player_ClearAnimations_t = unsafe extern "C" fn(player: PlayerPtr, syncType: i32) -> bool;
 
-pub type Player_SetCameraPos_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-) -> bool;
+pub type Player_SetCameraPos_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> bool;
 
-pub type Player_GetCameraPos_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: *mut f32,
-    y: *mut f32,
-    z: *mut f32,
-) -> bool;
+pub type Player_GetCameraPos_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
 
-pub type Player_SetCameraLookAt_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-    cutType: i32,
-) -> bool;
+pub type Player_SetCameraLookAt_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32, cutType: i32) -> bool;
 
 pub type Player_SetCameraBehind_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 
