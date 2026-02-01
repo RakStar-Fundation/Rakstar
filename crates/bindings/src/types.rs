@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use std::ffi::c_void;
 
 #[repr(C)]
@@ -20,9 +21,97 @@ pub enum EventPriorityType {
 }
 
 #[repr(C)]
+pub struct EventArgs<T> {
+    pub size: i32,
+    pub list: *mut T,
+}
+
+#[repr(C)]
 pub struct EventArgsCommon {
     pub size: i32,
     pub list: *mut *mut c_void,
+}
+
+#[repr(C)]
+pub struct OnPlayerConnect {
+    pub player: *mut PlayerPtr,
+}
+#[repr(C)]
+pub struct OnPlayerDisconnect {
+    pub player: *mut PlayerPtr,
+    pub reason: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerSpawn {
+    pub player: *mut PlayerPtr,
+}
+#[repr(C)]
+pub struct OnPlayerDeath {
+    pub player: *mut PlayerPtr,
+    pub killer: *mut PlayerPtr,
+    pub reason: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerText {
+    pub player: *mut PlayerPtr,
+    pub text: *mut CAPIStringView,
+}
+#[repr(C)]
+pub struct OnPlayerCommandText {
+    pub player: *mut PlayerPtr,
+    pub command: *mut CAPIStringView,
+}
+#[repr(C)]
+pub struct OnPlayerRequestClass {
+    pub player: *mut PlayerPtr,
+    pub classId: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerRequestSpawn {
+    pub player: *mut PlayerPtr,
+}
+#[repr(C)]
+pub struct OnPlayerKeyStateChange {
+    pub player: *mut PlayerPtr,
+    pub newKeys: *mut i32,
+    pub oldKeys: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerStreamIn {
+    pub player: *mut PlayerPtr,
+    pub forPlayer: *mut PlayerPtr,
+}
+#[repr(C)]
+pub struct OnPlayerStreamOut {
+    pub player: *mut PlayerPtr,
+    pub forPlayer: *mut PlayerPtr,
+}
+#[repr(C)]
+pub struct OnPlayerTakeDamage {
+    pub player: *mut PlayerPtr,
+    pub from: *mut PlayerPtr,
+    pub amount: *mut f32,
+    pub weapon: *mut i32,
+    pub bodypart: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerGiveDamage {
+    pub player: *mut PlayerPtr,
+    pub to: *mut PlayerPtr,
+    pub amount: *mut f32,
+    pub weapon: *mut i32,
+    pub bodypart: *mut i32,
+}
+#[repr(C)]
+pub struct OnPlayerEnterVehicle {
+    pub player: *mut PlayerPtr,
+    pub vehicle: *mut VehiclePtr,
+    pub passenger: *mut bool,
+}
+#[repr(C)]
+pub struct OnPlayerExitVehicle {
+    pub player: *mut PlayerPtr,
+    pub vehicle: *mut VehiclePtr,
 }
 
 pub type EventCallbackCommon = unsafe extern "C" fn(args: *mut EventArgsCommon) -> bool;
