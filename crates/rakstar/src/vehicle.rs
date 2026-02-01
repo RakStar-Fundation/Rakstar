@@ -1,10 +1,10 @@
-use bindings::{VehiclePtr, CAPIStringView};
-use std::mem::MaybeUninit;
 use crate::call_api;
+use bindings::{CAPIStringView, VehiclePtr};
+use std::mem::MaybeUninit;
 
 #[repr(transparent)]
 pub struct Vehicle {
-    ptr: VehiclePtr,
+    pub(crate) ptr: VehiclePtr,
 }
 
 impl Vehicle {
@@ -29,7 +29,18 @@ impl Vehicle {
                 return None;
             };
             let mut id = 0i32;
-            let ptr = func(model, x, y, z, rotation, color1, color2, respawn_delay, add_siren, &mut id as *mut i32);
+            let ptr = func(
+                model,
+                x,
+                y,
+                z,
+                rotation,
+                color1,
+                color2,
+                respawn_delay,
+                add_siren,
+                &mut id as *mut i32,
+            );
             if ptr.is_null() {
                 return None;
             }

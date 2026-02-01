@@ -107,4 +107,32 @@ impl Player {
     pub fn give_weapon(&self, weapon: i32, ammo: i32) -> bool {
         call_api!(player.give_weapon => self.ptr, weapon, ammo; or false)
     }
+
+    pub fn put_in_vehicle(&self, vehicle: &crate::Vehicle, seat: i32) -> bool {
+        call_api!(player.put_in_vehicle => self.ptr, vehicle.ptr, seat; or false)
+    }
+
+    pub fn remove_from_vehicle(&self, force: bool) -> bool {
+        call_api!(player.remove_from_vehicle => self.ptr, force; or false)
+    }
+
+    pub fn is_in_vehicle(&self, vehicle: &crate::Vehicle) -> bool {
+        call_api!(player.is_in_vehicle => self.ptr, vehicle.ptr; or false)
+    }
+
+    pub fn is_in_any_vehicle(&self) -> bool {
+        call_api!(player.is_in_any_vehicle => self.ptr; or false)
+    }
+
+    pub fn get_vehicle_id(&self) -> i32 {
+        call_api!(player.get_vehicle_id => self.ptr; or -1)
+    }
+
+    pub fn get_facing_angle(&self) -> f32 {
+        call_api!(player.get_facing_angle => self.ptr; or 0.0)
+    }
+
+    pub fn set_facing_angle(&self, angle: f32) -> bool {
+        call_api!(player.set_facing_angle => self.ptr, angle; or false)
+    }
 }
