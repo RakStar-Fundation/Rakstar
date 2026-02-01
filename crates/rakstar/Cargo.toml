@@ -10,4 +10,5 @@ crate-type = ["cdylib", "rlib"]
 encoding_rs = { workspace = true }
 omp = "2.1.0"
 bindings = { path = "../bindings" }
+tokio = { version = "1.49.0", features = ["full"] }
 

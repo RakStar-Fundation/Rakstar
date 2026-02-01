@@ -226,6 +226,7 @@ macro_rules! entrypoint {
             extern "C" fn on_ready() {
                 unsafe {
                     if let Some(ref mut comp) = COMPONENT {
+                        $crate::runtime::init();
                         comp.on_ready();
                     }
 

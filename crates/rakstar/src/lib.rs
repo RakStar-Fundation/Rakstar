@@ -20,3 +20,5 @@ pub use events::EventHandler;
 pub use macros::Component;
 pub use player::Player;
 pub use vehicle::Vehicle;
+pub mod runtime;
+pub use runtime::spawn;

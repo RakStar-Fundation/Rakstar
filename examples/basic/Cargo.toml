@@ -8,3 +8,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rakstar = { path = "../../crates/rakstar" }
+tokio = { version = "1.49.0", features = ["full"] }
