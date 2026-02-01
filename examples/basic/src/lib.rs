@@ -24,8 +24,6 @@ impl EventHandler for MyComponent {
 
     fn on_player_command_text(&mut self, player: Player, command: String) -> bool {
         if command.starts_with("/veh") {
-            println!("here2");
-
             let (x, y, z) = player.get_pos();
             let rotation = player.get_facing_angle();
 
@@ -34,15 +32,6 @@ impl EventHandler for MyComponent {
             };
 
             player.put_in_vehicle(&vehicle, 0);
-            return true;
-        }
-
-        if command.starts_with("/async") {
-            rakstar::spawn(async move {
-                println!("Async task started!");
-                tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
-                println!("Async task finished after 2 seconds!");
-            });
             return true;
         }
 
