@@ -167,6 +167,73 @@ impl Player {
         }
         false
     }
+
+    pub fn set_checkpoint(&self, x: f32, y: f32, z: f32, radius: f32) -> bool {
+        call_api!(checkpoint.set => self.ptr, x, y, z, radius; or false)
+    }
+
+    pub fn disable_checkpoint(&self) -> bool {
+        call_api!(checkpoint.disable => self.ptr; or false)
+    }
+
+    pub fn is_in_checkpoint(&self) -> bool {
+        call_api!(checkpoint.is_player_in => self.ptr; or false)
+    }
+
+    pub fn is_checkpoint_active(&self) -> bool {
+        call_api!(checkpoint.is_active => self.ptr; or false)
+    }
+
+    pub fn get_checkpoint(&self) -> Option<(f32, f32, f32, f32)> {
+        let (mut x, mut y, mut z, mut radius) = (0.0f32, 0.0f32, 0.0f32, 0.0f32);
+        let success = (|| call_api!(checkpoint.get => self.ptr, &mut x, &mut y, &mut z, &mut radius; or false))(
+        );
+        if success {
+            Some((x, y, z, radius))
+        } else {
+            None
+        }
+    }
+
+    pub fn set_race_checkpoint(
+        &self,
+        type_: i32,
+        x: f32,
+        y: f32,
+        z: f32,
+        next_x: f32,
+        next_y: f32,
+        next_z: f32,
+        radius: f32,
+    ) -> bool {
+        call_api!(checkpoint.race_set => self.ptr, type_, x, y, z, next_x, next_y, next_z, radius; or false)
+    }
+
+    pub fn disable_race_checkpoint(&self) -> bool {
+        call_api!(checkpoint.race_disable => self.ptr; or false)
+    }
+
+    pub fn is_in_race_checkpoint(&self) -> bool {
+        call_api!(checkpoint.race_is_player_in => self.ptr; or false)
+    }
+
+    pub fn is_race_checkpoint_active(&self) -> bool {
+        call_api!(checkpoint.race_is_active => self.ptr; or false)
+    }
+
+    pub fn get_race_checkpoint(&self) -> Option<(f32, f32, f32, f32, f32, f32, f32)> {
+        let (mut x, mut y, mut z) = (0.0f32, 0.0f32, 0.0f32);
+        let (mut next_x, mut next_y, mut next_z) = (0.0f32, 0.0f32, 0.0f32);
+        let mut radius = 0.0f32;
+
+        let success = (|| call_api!(checkpoint.race_get => self.ptr, &mut x, &mut y, &mut z, &mut next_x, &mut next_y, &mut next_z, &mut radius; or false))(
+        );
+        if success {
+            Some((x, y, z, next_x, next_y, next_z, radius))
+        } else {
+            None
+        }
+    }
 }
 
 #[repr(i32)]

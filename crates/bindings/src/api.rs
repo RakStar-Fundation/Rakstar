@@ -30,7 +30,7 @@ pub struct EventApi {
 #[repr(C)]
 pub struct OmpApi {
     pub actor: *const c_void,
-    pub checkpoint: *const c_void,
+    pub checkpoint: crate::checkpoint::CheckpointAPI,
     pub race_checkpoint: *const c_void,
     pub class: *const c_void,
     pub player: PlayerAPI,
@@ -352,6 +352,40 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     );
 
     load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
+
+    load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
+
+    load_fn!(lib, api, (*api).checkpoint.set, "Checkpoint_Set");
+    load_fn!(lib, api, (*api).checkpoint.disable, "Checkpoint_Disable");
+    load_fn!(
+        lib,
+        api,
+        (*api).checkpoint.is_player_in,
+        "Checkpoint_IsPlayerIn"
+    );
+    load_fn!(lib, api, (*api).checkpoint.is_active, "Checkpoint_IsActive");
+    load_fn!(lib, api, (*api).checkpoint.get, "Checkpoint_Get");
+
+    load_fn!(lib, api, (*api).checkpoint.race_set, "RaceCheckpoint_Set");
+    load_fn!(
+        lib,
+        api,
+        (*api).checkpoint.race_disable,
+        "RaceCheckpoint_Disable"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).checkpoint.race_is_player_in,
+        "RaceCheckpoint_IsPlayerIn"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).checkpoint.race_is_active,
+        "RaceCheckpoint_IsActive"
+    );
+    load_fn!(lib, api, (*api).checkpoint.race_get, "RaceCheckpoint_Get");
 
     true
 }
