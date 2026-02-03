@@ -1,6 +1,6 @@
 use super::types::ComponentVersion;
 use crate::vehicle::VehicleAPI;
-use crate::{core::CoreAPI, player::PlayerAPI};
+use crate::{core::CoreAPI, player::PlayerAPI, player_object::PlayerObjectAPI};
 use std::ffi::{c_void, CString};
 
 pub type ComponentCreateFn = unsafe extern "C" fn(
@@ -44,7 +44,7 @@ pub struct OmpApi {
     pub gang_zone: *const c_void,
     pub menu: *const c_void,
     pub object: *const c_void,
-    pub player_object: *const c_void,
+    pub player_object: PlayerObjectAPI,
     pub pickup: *const c_void,
     pub all: *const c_void,
     pub recording: *const c_void,
@@ -183,6 +183,173 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
 
     load_fn!(lib, api, (*api).dialog.show, "Dialog_Show");
     load_fn!(lib, api, (*api).dialog.hide, "Dialog_Hide");
+
+    load_fn!(lib, api, (*api).player_object.create, "PlayerObject_Create");
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.destroy,
+        "PlayerObject_Destroy"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.from_id,
+        "PlayerObject_FromID"
+    );
+    load_fn!(lib, api, (*api).player_object.get_id, "PlayerObject_GetID");
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.attach_to_vehicle,
+        "PlayerObject_AttachToVehicle"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.attach_to_player,
+        "PlayerObject_AttachToPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.attach_to_object,
+        "PlayerObject_AttachToObject"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.set_pos,
+        "PlayerObject_SetPos"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_pos,
+        "PlayerObject_GetPos"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.set_rot,
+        "PlayerObject_SetRot"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_rot,
+        "PlayerObject_GetRot"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_model,
+        "PlayerObject_GetModel"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.set_no_camera_collision,
+        "PlayerObject_SetNoCameraCollision"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.is_valid,
+        "PlayerObject_IsValid"
+    );
+    load_fn!(lib, api, (*api).player_object.move_, "PlayerObject_Move");
+    load_fn!(lib, api, (*api).player_object.stop, "PlayerObject_Stop");
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.is_moving,
+        "PlayerObject_IsMoving"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.begin_editing,
+        "PlayerObject_BeginEditing"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.set_material,
+        "PlayerObject_SetMaterial"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.set_material_text,
+        "PlayerObject_SetMaterialText"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_draw_distance,
+        "PlayerObject_GetDrawDistance"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_move_speed,
+        "PlayerObject_GetMoveSpeed"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_moving_target_pos,
+        "PlayerObject_GetMovingTargetPos"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_moving_target_rot,
+        "PlayerObject_GetMovingTargetRot"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_attached_data,
+        "PlayerObject_GetAttachedData"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_attached_offset,
+        "PlayerObject_GetAttachedOffset"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_sync_rotation,
+        "PlayerObject_GetSyncRotation"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.is_material_slot_used,
+        "PlayerObject_IsMaterialSlotUsed"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_material,
+        "PlayerObject_GetMaterial"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_material_text,
+        "PlayerObject_GetMaterialText"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.is_no_camera_collision,
+        "PlayerObject_IsNoCameraCollision"
+    );
 
     load_fn!(lib, api, (*api).event.add_handler, "Event_AddHandler");
 

@@ -2,6 +2,7 @@ pub mod chat;
 pub mod command;
 pub mod events;
 pub mod player;
+pub mod player_object;
 pub mod utils;
 pub mod vehicle;
 
@@ -19,6 +20,7 @@ pub use command::{
 pub use events::EventHandler;
 pub use macros::Component;
 pub use player::Player;
+pub use player_object::PlayerObject;
 pub use vehicle::Vehicle;
 pub mod runtime;
 pub use runtime::spawn;
