@@ -42,8 +42,7 @@ impl NPC {
     }
 
     pub fn get_player(&self) -> Option<Player> {
-        let ptr = call_api!(npc.get_player(self.ptr))?;
-        Player::from_ptr(ptr)
+        call_api!(npc.get_player(self.ptr)).and_then(|ptr| Player::from_ptr(ptr))
     }
 
     pub fn destroy(&self) -> bool {
