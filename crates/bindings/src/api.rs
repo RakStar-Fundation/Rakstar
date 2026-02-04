@@ -392,6 +392,13 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).text_draw.destroy, "TextDraw_Destroy");
     load_fn!(lib, api, (*api).text_draw.from_id, "TextDraw_FromID");
     load_fn!(lib, api, (*api).text_draw.get_id, "TextDraw_GetID");
+    load_fn!(lib, api, (*api).text_draw.is_valid, "TextDraw_IsValid");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.is_visible_for_player,
+        "TextDraw_IsVisibleForPlayer"
+    );
     load_fn!(
         lib,
         api,
@@ -411,6 +418,26 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         "TextDraw_SetAlignment"
     );
     load_fn!(lib, api, (*api).text_draw.set_color, "TextDraw_SetColor");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_box_color,
+        "TextDraw_SetBoxColor"
+    );
+    load_fn!(lib, api, (*api).text_draw.set_use_box, "TextDraw_SetUseBox");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_outline,
+        "TextDraw_SetOutline"
+    );
+    load_fn!(lib, api, (*api).text_draw.set_shadow, "TextDraw_SetShadow");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_background_color,
+        "TextDraw_SetBackgroundColor"
+    );
     load_fn!(lib, api, (*api).text_draw.set_font, "TextDraw_SetFont");
     load_fn!(
         lib,
@@ -421,8 +448,57 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(
         lib,
         api,
+        (*api).text_draw.set_selectable,
+        "TextDraw_SetSelectable"
+    );
+    load_fn!(
+        lib,
+        api,
         (*api).text_draw.show_for_player,
         "TextDraw_ShowForPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.hide_for_player,
+        "TextDraw_HideForPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.show_for_all,
+        "TextDraw_ShowForAll"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.hide_for_all,
+        "TextDraw_HideForAll"
+    );
+    load_fn!(lib, api, (*api).text_draw.set_string, "TextDraw_SetString");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_string_for_player,
+        "TextDraw_SetStringForPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_preview_model,
+        "TextDraw_SetPreviewModel"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_preview_rot,
+        "TextDraw_SetPreviewRot"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_preview_veh_col,
+        "TextDraw_SetPreviewVehCol"
     );
     load_fn!(
         lib,
