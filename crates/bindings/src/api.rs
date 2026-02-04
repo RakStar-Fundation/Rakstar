@@ -1,4 +1,5 @@
 use super::types::ComponentVersion;
+use crate::npc::NPCAPI;
 use crate::textdraw::TextDrawAPI;
 use crate::vehicle::VehicleAPI;
 use crate::{core::CoreAPI, player::PlayerAPI, player_object::PlayerObjectAPI};
@@ -38,7 +39,7 @@ pub struct OmpApi {
     pub component: ComponentApi,
     pub config: *const c_void,
     pub core: CoreAPI,
-    pub npc: *const c_void,
+    pub npc: NPCAPI,
     pub custom_model: *const c_void,
     pub dialog: crate::dialog::DialogAPI,
     pub event: EventApi,
@@ -388,6 +389,98 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     );
     load_fn!(lib, api, (*api).checkpoint.race_get, "RaceCheckpoint_Get");
 
+    // NPC functions
+    load_fn!(lib, api, (*api).npc.connect, "NPC_Connect");
+    load_fn!(lib, api, (*api).npc.create, "NPC_Create");
+    load_fn!(lib, api, (*api).npc.destroy, "NPC_Destroy");
+    load_fn!(lib, api, (*api).npc.from_id, "NPC_FromID");
+    load_fn!(lib, api, (*api).npc.get_id, "NPC_GetID");
+    load_fn!(lib, api, (*api).npc.is_valid, "NPC_IsValid");
+    load_fn!(lib, api, (*api).npc.get_player, "NPC_GetPlayer");
+    load_fn!(lib, api, (*api).npc.spawn, "NPC_Spawn");
+    load_fn!(lib, api, (*api).npc.respawn, "NPC_Respawn");
+    load_fn!(lib, api, (*api).npc.set_pos, "NPC_SetPos");
+    load_fn!(lib, api, (*api).npc.get_pos, "NPC_GetPos");
+    load_fn!(lib, api, (*api).npc.set_rot, "NPC_SetRot");
+    load_fn!(lib, api, (*api).npc.get_rot, "NPC_GetRot");
+    load_fn!(lib, api, (*api).npc.set_facing_angle, "NPC_SetFacingAngle");
+    load_fn!(lib, api, (*api).npc.get_facing_angle, "NPC_GetFacingAngle");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.set_virtual_world,
+        "NPC_SetVirtualWorld"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.get_virtual_world,
+        "NPC_GetVirtualWorld"
+    );
+    load_fn!(lib, api, (*api).npc.set_interior, "NPC_SetInterior");
+    load_fn!(lib, api, (*api).npc.get_interior, "NPC_GetInterior");
+    load_fn!(lib, api, (*api).npc.move_, "NPC_Move");
+    load_fn!(lib, api, (*api).npc.move_to_player, "NPC_MoveToPlayer");
+    load_fn!(lib, api, (*api).npc.stop_move, "NPC_StopMove");
+    load_fn!(lib, api, (*api).npc.is_moving, "NPC_IsMoving");
+    load_fn!(lib, api, (*api).npc.set_skin, "NPC_SetSkin");
+    load_fn!(lib, api, (*api).npc.is_streamed_in, "NPC_IsStreamedIn");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.is_any_streamed_in,
+        "NPC_IsAnyStreamedIn"
+    );
+    load_fn!(lib, api, (*api).npc.set_health, "NPC_SetHealth");
+    load_fn!(lib, api, (*api).npc.get_health, "NPC_GetHealth");
+    load_fn!(lib, api, (*api).npc.set_armour, "NPC_SetArmour");
+    load_fn!(lib, api, (*api).npc.get_armour, "NPC_GetArmour");
+    load_fn!(lib, api, (*api).npc.is_dead, "NPC_IsDead");
+    load_fn!(lib, api, (*api).npc.set_invulnerable, "NPC_SetInvulnerable");
+    load_fn!(lib, api, (*api).npc.is_invulnerable, "NPC_IsInvulnerable");
+    load_fn!(lib, api, (*api).npc.set_weapon, "NPC_SetWeapon");
+    load_fn!(lib, api, (*api).npc.get_weapon, "NPC_GetWeapon");
+    load_fn!(lib, api, (*api).npc.set_ammo, "NPC_SetAmmo");
+    load_fn!(lib, api, (*api).npc.get_ammo, "NPC_GetAmmo");
+    load_fn!(lib, api, (*api).npc.set_ammo_in_clip, "NPC_SetAmmoInClip");
+    load_fn!(lib, api, (*api).npc.get_ammo_in_clip, "NPC_GetAmmoInClip");
+    load_fn!(lib, api, (*api).npc.enable_reloading, "NPC_EnableReloading");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.is_reload_enabled,
+        "NPC_IsReloadEnabled"
+    );
+    load_fn!(lib, api, (*api).npc.is_reloading, "NPC_IsReloading");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.enable_infinite_ammo,
+        "NPC_EnableInfiniteAmmo"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.is_infinite_ammo_enabled,
+        "NPC_IsInfiniteAmmoEnabled"
+    );
+    load_fn!(lib, api, (*api).npc.get_weapon_state, "NPC_GetWeaponState");
+    load_fn!(lib, api, (*api).npc.set_keys, "NPC_SetKeys");
+    load_fn!(lib, api, (*api).npc.get_keys, "NPC_GetKeys");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.set_weapon_skill_level,
+        "NPC_SetWeaponSkillLevel"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.get_weapon_skill_level,
+        "NPC_GetWeaponSkillLevel"
+    );
+
+    // TextDraw functions
     load_fn!(lib, api, (*api).text_draw.create, "TextDraw_Create");
     load_fn!(lib, api, (*api).text_draw.destroy, "TextDraw_Destroy");
     load_fn!(lib, api, (*api).text_draw.from_id, "TextDraw_FromID");

@@ -3,18 +3,21 @@ pub mod api;
 pub mod checkpoint;
 pub mod core;
 pub mod dialog;
+pub mod npc;
 pub mod player;
 pub mod player_object;
 pub mod textdraw;
 pub mod types;
 pub mod vehicle;
 
-pub use api::{initialize_capi, ComponentApi, EventApi, OmpApi};
-pub use types::ComponentVersion;
-
 pub use actor::ActorAPI;
+pub use api::{initialize_capi, ComponentApi, EventApi, OmpApi};
 pub use checkpoint::CheckpointAPI;
+pub use core::CoreAPI;
+pub use dialog::DialogAPI;
+pub use npc::NPCAPI;
 pub use player::PlayerAPI;
+pub use player_object::PlayerObjectAPI;
 pub use textdraw::TextDrawAPI;
 pub use types::*;
 pub use vehicle::VehicleAPI;

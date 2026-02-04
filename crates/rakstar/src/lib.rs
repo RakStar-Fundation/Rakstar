@@ -1,6 +1,7 @@
 pub mod chat;
 pub mod command;
 pub mod events;
+pub mod npc;
 pub mod player;
 pub mod player_object;
 pub mod runtime;
@@ -20,6 +21,7 @@ pub use command::{
 };
 pub use events::EventHandler;
 pub use macros::Component;
+pub use npc::NPC;
 pub use player::Player;
 pub use player_object::PlayerObject;
 pub use runtime::spawn;
