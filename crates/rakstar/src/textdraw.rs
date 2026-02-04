@@ -8,7 +8,7 @@ pub struct TextDraw {
 }
 
 impl TextDraw {
-    pub fn new(x: f32, y: f32, text: &str) -> Option<Self> {
+    pub fn create(x: f32, y: f32, text: &str) -> Option<Self> {
         let mut id: i32 = -1;
         let c_text = std::ffi::CString::new(text).ok()?;
         let ptr = call_api!(text_draw.create => x, y, c_text.as_ptr(), &mut id as *mut i32; or return None);
