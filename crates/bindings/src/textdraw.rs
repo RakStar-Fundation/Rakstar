@@ -1,3 +1,4 @@
+#![allow(non_snake_case, non_camel_case_types)]
 use crate::types::*;
 
 pub type TextDraw_Create_t =
@@ -12,7 +13,8 @@ pub type TextDraw_SetLetterSize_t =
     unsafe extern "C" fn(textdraw: TextDrawPtr, size_x: f32, size_y: f32) -> bool;
 pub type TextDraw_SetTextSize_t =
     unsafe extern "C" fn(textdraw: TextDrawPtr, size_x: f32, size_y: f32) -> bool;
-pub type TextDraw_SetAlignment_t = unsafe extern "C" fn(textdraw: TextDrawPtr, alignment: i32) -> bool;
+pub type TextDraw_SetAlignment_t =
+    unsafe extern "C" fn(textdraw: TextDrawPtr, alignment: i32) -> bool;
 pub type TextDraw_SetColor_t = unsafe extern "C" fn(textdraw: TextDrawPtr, color: u32) -> bool;
 pub type TextDraw_SetUseBox_t = unsafe extern "C" fn(textdraw: TextDrawPtr, use_: bool) -> bool;
 pub type TextDraw_SetBoxColor_t = unsafe extern "C" fn(textdraw: TextDrawPtr, color: u32) -> bool;
@@ -21,7 +23,8 @@ pub type TextDraw_SetOutline_t = unsafe extern "C" fn(textdraw: TextDrawPtr, siz
 pub type TextDraw_SetBackgroundColor_t =
     unsafe extern "C" fn(textdraw: TextDrawPtr, color: u32) -> bool;
 pub type TextDraw_SetFont_t = unsafe extern "C" fn(textdraw: TextDrawPtr, font: i32) -> bool;
-pub type TextDraw_SetProportional_t = unsafe extern "C" fn(textdraw: TextDrawPtr, set: bool) -> bool;
+pub type TextDraw_SetProportional_t =
+    unsafe extern "C" fn(textdraw: TextDrawPtr, set: bool) -> bool;
 pub type TextDraw_SetSelectable_t = unsafe extern "C" fn(textdraw: TextDrawPtr, set: bool) -> bool;
 pub type TextDraw_ShowForPlayer_t =
     unsafe extern "C" fn(player: PlayerPtr, textdraw: TextDrawPtr) -> bool;
@@ -29,8 +32,10 @@ pub type TextDraw_HideForPlayer_t =
     unsafe extern "C" fn(player: PlayerPtr, textdraw: TextDrawPtr) -> bool;
 pub type TextDraw_ShowForAll_t = unsafe extern "C" fn(textdraw: TextDrawPtr) -> bool;
 pub type TextDraw_HideForAll_t = unsafe extern "C" fn(textdraw: TextDrawPtr) -> bool;
-pub type TextDraw_SetString_t = unsafe extern "C" fn(textdraw: TextDrawPtr, text: *const i8) -> bool;
-pub type TextDraw_SetPreviewModel_t = unsafe extern "C" fn(textdraw: TextDrawPtr, model: i32) -> bool;
+pub type TextDraw_SetString_t =
+    unsafe extern "C" fn(textdraw: TextDrawPtr, text: *const i8) -> bool;
+pub type TextDraw_SetPreviewModel_t =
+    unsafe extern "C" fn(textdraw: TextDrawPtr, model: i32) -> bool;
 pub type TextDraw_SetPreviewRot_t = unsafe extern "C" fn(
     textdraw: TextDrawPtr,
     rotation_x: f32,

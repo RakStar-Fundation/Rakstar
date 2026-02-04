@@ -1,12 +1,8 @@
+#![allow(non_snake_case, non_camel_case_types)]
 use crate::types::*;
 
-pub type Checkpoint_Set_t = unsafe extern "C" fn(
-    player: PlayerPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-    radius: f32,
-) -> bool;
+pub type Checkpoint_Set_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32, radius: f32) -> bool;
 
 pub type Checkpoint_Disable_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 pub type Checkpoint_IsPlayerIn_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;

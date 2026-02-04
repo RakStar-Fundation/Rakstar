@@ -1,31 +1,17 @@
+#![allow(non_snake_case, non_camel_case_types)]
 use crate::types::*;
 
-pub type Actor_Create_t = unsafe extern "C" fn(
-    model: i32,
-    x: f32,
-    y: f32,
-    z: f32,
-    rot: f32,
-    id: *mut i32,
-) -> ActorPtr;
+pub type Actor_Create_t =
+    unsafe extern "C" fn(model: i32, x: f32, y: f32, z: f32, rot: f32, id: *mut i32) -> ActorPtr;
 
 pub type Actor_Destroy_t = unsafe extern "C" fn(actor: ActorPtr) -> bool;
 pub type Actor_FromID_t = unsafe extern "C" fn(actorid: i32) -> ActorPtr;
 pub type Actor_GetID_t = unsafe extern "C" fn(actor: ActorPtr) -> i32;
 
-pub type Actor_SetPos_t = unsafe extern "C" fn(
-    actor: ActorPtr,
-    x: f32,
-    y: f32,
-    z: f32,
-) -> bool;
+pub type Actor_SetPos_t = unsafe extern "C" fn(actor: ActorPtr, x: f32, y: f32, z: f32) -> bool;
 
-pub type Actor_GetPos_t = unsafe extern "C" fn(
-    actor: ActorPtr,
-    x: *mut f32,
-    y: *mut f32,
-    z: *mut f32,
-) -> bool;
+pub type Actor_GetPos_t =
+    unsafe extern "C" fn(actor: ActorPtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
 
 pub type Actor_SetHealth_t = unsafe extern "C" fn(actor: ActorPtr, hp: f32) -> bool;
 pub type Actor_GetHealth_t = unsafe extern "C" fn(actor: ActorPtr) -> f32;
