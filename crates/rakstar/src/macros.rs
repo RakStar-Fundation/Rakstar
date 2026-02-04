@@ -1,15 +1,10 @@
 #[macro_export]
 macro_rules! call_api {
-    ($field_path:ident . $field:ident => $($args:expr),* ; or $default:expr) => {
+    ($field_path:ident . $field:ident ( $($args:expr),* )) => {
         unsafe {
-            let api = match $crate::macros::get_api() {
-                Some(api) => api,
-                None => return $default,
-            };
-            let Some(func) = api.$field_path.$field else {
-                return $default;
-            };
-            func($($args),*)
+            $crate::macros::get_api()
+                .and_then(|api| api.$field_path.$field)
+                .map(|func| func($($args),*))
         }
     };
 }
@@ -24,13 +19,13 @@ pub trait FromCEvent<S> {
 
 impl FromCEvent<bindings::types::PlayerPtr> for crate::Player {
     fn from_c(ptr: bindings::types::PlayerPtr) -> Self {
-        crate::Player::from_ptr(ptr)
+        crate::Player::from_ptr(ptr).unwrap()
     }
 }
 
 impl FromCEvent<bindings::types::VehiclePtr> for crate::Vehicle {
     fn from_c(ptr: bindings::types::VehiclePtr) -> Self {
-        crate::Vehicle::from_ptr(ptr)
+        crate::Vehicle::from_ptr(ptr).unwrap()
     }
 }
 
