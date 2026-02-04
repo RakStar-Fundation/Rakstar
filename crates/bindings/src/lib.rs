@@ -5,6 +5,7 @@ pub mod core;
 pub mod dialog;
 pub mod player;
 pub mod player_object;
+pub mod textdraw;
 pub mod types;
 pub mod vehicle;
 
@@ -14,5 +15,6 @@ pub use types::ComponentVersion;
 pub use actor::ActorAPI;
 pub use checkpoint::CheckpointAPI;
 pub use player::PlayerAPI;
+pub use textdraw::TextDrawAPI;
 pub use types::*;
 pub use vehicle::VehicleAPI;

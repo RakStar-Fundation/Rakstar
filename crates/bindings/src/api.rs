@@ -1,4 +1,5 @@
 use super::types::ComponentVersion;
+use crate::textdraw::TextDrawAPI;
 use crate::vehicle::VehicleAPI;
 use crate::{core::CoreAPI, player::PlayerAPI, player_object::PlayerObjectAPI};
 use std::ffi::{c_void, CString};
@@ -48,7 +49,7 @@ pub struct OmpApi {
     pub pickup: *const c_void,
     pub all: *const c_void,
     pub recording: *const c_void,
-    pub text_draw: *const c_void,
+    pub text_draw: TextDrawAPI,
     pub player_text_draw: *const c_void,
     pub text_label: *const c_void,
     pub player_text_label: *const c_void,
@@ -386,6 +387,64 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         "RaceCheckpoint_IsActive"
     );
     load_fn!(lib, api, (*api).checkpoint.race_get, "RaceCheckpoint_Get");
+
+    load_fn!(lib, api, (*api).text_draw.create, "TextDraw_Create");
+    load_fn!(lib, api, (*api).text_draw.destroy, "TextDraw_Destroy");
+    load_fn!(lib, api, (*api).text_draw.from_id, "TextDraw_FromID");
+    load_fn!(lib, api, (*api).text_draw.get_id, "TextDraw_GetID");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_letter_size,
+        "TextDraw_SetLetterSize"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_text_size,
+        "TextDraw_SetTextSize"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_alignment,
+        "TextDraw_SetAlignment"
+    );
+    load_fn!(lib, api, (*api).text_draw.set_color, "TextDraw_SetColor");
+    load_fn!(lib, api, (*api).text_draw.set_font, "TextDraw_SetFont");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_proportional,
+        "TextDraw_SetProportional"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.show_for_player,
+        "TextDraw_ShowForPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.hide_for_player,
+        "TextDraw_HideForPlayer"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.show_for_all,
+        "TextDraw_ShowForAll"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.hide_for_all,
+        "TextDraw_HideForAll"
+    );
+    load_fn!(lib, api, (*api).text_draw.set_string, "TextDraw_SetString");
+    load_fn!(lib, api, (*api).text_draw.get_pos, "TextDraw_GetPos");
+    load_fn!(lib, api, (*api).text_draw.set_pos, "TextDraw_SetPos");
 
     true
 }
