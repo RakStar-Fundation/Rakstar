@@ -168,6 +168,92 @@ pub type Player_SetCameraLookAt_t =
 
 pub type Player_SetCameraBehind_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
 
+pub type Player_GetPlayerAmmo_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SetAmmo_t = unsafe extern "C" fn(player: PlayerPtr, id: u8, ammo: u32) -> bool;
+pub type Player_SetArmedWeapon_t = unsafe extern "C" fn(player: PlayerPtr, weapon: u8) -> bool;
+pub type Player_GetWeaponData_t =
+    unsafe extern "C" fn(player: PlayerPtr, slot: i32, weaponid: *mut i32, ammo: *mut i32) -> bool;
+pub type Player_GetWeaponState_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+
+pub type Player_GetKeys_t = unsafe extern "C" fn(
+    player: PlayerPtr,
+    keys: *mut i32,
+    updown: *mut i32,
+    leftright: *mut i32,
+) -> bool;
+
+// Camera
+pub type Player_GetCameraMode_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_GetCameraZoom_t = unsafe extern "C" fn(player: PlayerPtr) -> f32;
+pub type Player_GetCameraAspectRatio_t = unsafe extern "C" fn(player: PlayerPtr) -> f32;
+pub type Player_GetCameraFrontVector_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: *mut f32, y: *mut f32, z: *mut f32) -> bool;
+
+// Animation
+pub type Player_GetAnimationIndex_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_GetAnimationFlags_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_GetAnimationName_t =
+    unsafe extern "C" fn(index: i32, lib: *mut CAPIStringView, name: *mut CAPIStringView) -> bool;
+
+// Spectate
+pub type Player_GetPlayerSpectateID_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_GetSpectateType_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SpectatePlayer_t =
+    unsafe extern "C" fn(player: PlayerPtr, target: PlayerPtr, mode: i32) -> bool;
+pub type Player_SpectateVehicle_t =
+    unsafe extern "C" fn(player: PlayerPtr, target: VehiclePtr, mode: i32) -> bool;
+
+// Surfing
+pub type Player_GetSurfingVehicle_t = unsafe extern "C" fn(player: PlayerPtr) -> VehiclePtr;
+pub type Player_GetSurfingObject_t =
+    unsafe extern "C" fn(player: PlayerPtr) -> *const std::ffi::c_void;
+pub type Player_GetSurfingOffsets_t = unsafe extern "C" fn(
+    player: PlayerPtr,
+    offsetX: *mut f32,
+    offsetY: *mut f32,
+    offsetZ: *mut f32,
+) -> bool;
+
+// Target
+pub type Player_GetTargetPlayer_t = unsafe extern "C" fn(player: PlayerPtr) -> PlayerPtr;
+pub type Player_GetTargetActor_t =
+    unsafe extern "C" fn(player: PlayerPtr) -> *const std::ffi::c_void;
+
+// Distance
+pub type Player_GetDistanceFromPoint_t =
+    unsafe extern "C" fn(player: PlayerPtr, x: f32, y: f32, z: f32) -> f32;
+pub type Player_IsInRangeOfPoint_t =
+    unsafe extern "C" fn(player: PlayerPtr, range: f32, x: f32, y: f32, z: f32) -> bool;
+
+// Skills
+pub type Player_GetSkillLevel_t = unsafe extern "C" fn(player: PlayerPtr, skill: i32) -> i32;
+pub type Player_SetSkillLevel_t =
+    unsafe extern "C" fn(player: PlayerPtr, weapon: u8, level: i32) -> bool;
+
+// Wanted/Drunk
+pub type Player_GetWantedLevel_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SetWantedLevel_t = unsafe extern "C" fn(player: PlayerPtr, level: i32) -> bool;
+pub type Player_GetDrunkLevel_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SetDrunkLevel_t = unsafe extern "C" fn(player: PlayerPtr, level: i32) -> bool;
+
+// Special Action
+pub type Player_GetSpecialAction_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SetSpecialAction_t = unsafe extern "C" fn(player: PlayerPtr, action: u32) -> bool;
+
+// Fighting Style
+pub type Player_GetFightingStyle_t = unsafe extern "C" fn(player: PlayerPtr) -> i32;
+pub type Player_SetFightingStyle_t = unsafe extern "C" fn(player: PlayerPtr, style: i32) -> bool;
+
+// Misc
+pub type Player_ForceClassSelection_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type Player_AllowTeleport_t = unsafe extern "C" fn(player: PlayerPtr, allow: bool) -> bool;
+pub type Player_IsTeleportAllowed_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type Player_AllowWeapons_t = unsafe extern "C" fn(player: PlayerPtr, allow: bool) -> bool;
+pub type Player_AreWeaponsAllowed_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+pub type Player_ToggleClock_t = unsafe extern "C" fn(player: PlayerPtr, enable: bool) -> bool;
+pub type Player_HasClock_t = unsafe extern "C" fn(player: PlayerPtr) -> bool;
+
+#[derive(Default)]
 pub struct PlayerAPI {
     pub set_spawn_info: Option<Player_SetSpawnInfo_t>,
     pub get_spawn_info: Option<Player_GetSpawnInfo_t>,
@@ -240,82 +326,45 @@ pub struct PlayerAPI {
     pub get_camera_pos: Option<Player_GetCameraPos_t>,
     pub set_camera_look_at: Option<Player_SetCameraLookAt_t>,
     pub set_camera_behind: Option<Player_SetCameraBehind_t>,
-}
-
-impl Default for PlayerAPI {
-    fn default() -> Self {
-        Self {
-            set_spawn_info: None,
-            get_spawn_info: None,
-            from_id: None,
-            get_id: None,
-            send_client_message: None,
-            set_pos: None,
-            get_pos: None,
-            set_health: None,
-            get_health: None,
-            set_armor: None,
-            get_armor: None,
-            set_skin: None,
-            get_skin: None,
-            set_color: None,
-            get_color: None,
-            get_default_color: None,
-            set_score: None,
-            get_score: None,
-            set_team: None,
-            get_team: None,
-            set_name: None,
-            get_name: None,
-            give_money: None,
-            get_money: None,
-            reset_money: None,
-            give_weapon: None,
-            remove_weapon: None,
-            reset_weapons: None,
-            get_weapon: None,
-            set_interior: None,
-            get_interior: None,
-            set_virtual_world: None,
-            get_virtual_world: None,
-            kick: None,
-            ban: None,
-            ban_ex: None,
-            is_admin: None,
-            set_admin: None,
-            is_npc: None,
-            is_spawned: None,
-            get_state: None,
-            get_ping: None,
-            set_facing_angle: None,
-            get_facing_angle: None,
-            get_ip: None,
-            get_raw_ip: None,
-            set_time: None,
-            get_time: None,
-            set_weather: None,
-            get_weather: None,
-            set_gravity: None,
-            get_gravity: None,
-            spawn: None,
-            set_velocity: None,
-            get_velocity: None,
-            is_in_vehicle: None,
-            is_in_any_vehicle: None,
-            get_vehicle_id: None,
-            get_vehicle_seat: None,
-            put_in_vehicle: None,
-            remove_from_vehicle: None,
-            toggle_controllable: None,
-            is_controllable: None,
-            show_game_text: None,
-            hide_game_text: None,
-            apply_animation: None,
-            clear_animations: None,
-            set_camera_pos: None,
-            get_camera_pos: None,
-            set_camera_look_at: None,
-            set_camera_behind: None,
-        }
-    }
+    pub get_player_ammo: Option<Player_GetPlayerAmmo_t>,
+    pub set_ammo: Option<Player_SetAmmo_t>,
+    pub set_armed_weapon: Option<Player_SetArmedWeapon_t>,
+    pub get_weapon_data: Option<Player_GetWeaponData_t>,
+    pub get_weapon_state: Option<Player_GetWeaponState_t>,
+    pub get_keys: Option<Player_GetKeys_t>,
+    pub get_camera_mode: Option<Player_GetCameraMode_t>,
+    pub get_camera_zoom: Option<Player_GetCameraZoom_t>,
+    pub get_camera_aspect_ratio: Option<Player_GetCameraAspectRatio_t>,
+    pub get_camera_front_vector: Option<Player_GetCameraFrontVector_t>,
+    pub get_animation_index: Option<Player_GetAnimationIndex_t>,
+    pub get_animation_flags: Option<Player_GetAnimationFlags_t>,
+    pub get_animation_name: Option<Player_GetAnimationName_t>,
+    pub get_player_spectate_id: Option<Player_GetPlayerSpectateID_t>,
+    pub get_spectate_type: Option<Player_GetSpectateType_t>,
+    pub spectate_player: Option<Player_SpectatePlayer_t>,
+    pub spectate_vehicle: Option<Player_SpectateVehicle_t>,
+    pub get_surfing_vehicle: Option<Player_GetSurfingVehicle_t>,
+    pub get_surfing_object: Option<Player_GetSurfingObject_t>,
+    pub get_surfing_offsets: Option<Player_GetSurfingOffsets_t>,
+    pub get_target_player: Option<Player_GetTargetPlayer_t>,
+    pub get_target_actor: Option<Player_GetTargetActor_t>,
+    pub get_distance_from_point: Option<Player_GetDistanceFromPoint_t>,
+    pub is_in_range_of_point: Option<Player_IsInRangeOfPoint_t>,
+    pub get_skill_level: Option<Player_GetSkillLevel_t>,
+    pub set_skill_level: Option<Player_SetSkillLevel_t>,
+    pub get_wanted_level: Option<Player_GetWantedLevel_t>,
+    pub set_wanted_level: Option<Player_SetWantedLevel_t>,
+    pub get_drunk_level: Option<Player_GetDrunkLevel_t>,
+    pub set_drunk_level: Option<Player_SetDrunkLevel_t>,
+    pub get_special_action: Option<Player_GetSpecialAction_t>,
+    pub set_special_action: Option<Player_SetSpecialAction_t>,
+    pub get_fighting_style: Option<Player_GetFightingStyle_t>,
+    pub set_fighting_style: Option<Player_SetFightingStyle_t>,
+    pub force_class_selection: Option<Player_ForceClassSelection_t>,
+    pub allow_teleport: Option<Player_AllowTeleport_t>,
+    pub is_teleport_allowed: Option<Player_IsTeleportAllowed_t>,
+    pub allow_weapons: Option<Player_AllowWeapons_t>,
+    pub are_weapons_allowed: Option<Player_AreWeaponsAllowed_t>,
+    pub toggle_clock: Option<Player_ToggleClock_t>,
+    pub has_clock: Option<Player_HasClock_t>,
 }

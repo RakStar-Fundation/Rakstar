@@ -235,8 +235,213 @@ impl Player {
             &mut next_z,
             &mut radius
         ))
-        .filter(|&sucess| sucess)
+        .filter(|&success| success)
         .map(|_| (x, y, z, next_x, next_y, next_z, radius))
+    }
+
+    pub fn get_ammo(&self) -> i32 {
+        call_api!(player.get_player_ammo(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn set_ammo(&self, weapon_id: u8, ammo: u32) -> bool {
+        call_api!(player.set_ammo(self.ptr, weapon_id, ammo)).unwrap_or(false)
+    }
+
+    pub fn set_armed_weapon(&self, weapon: u8) -> bool {
+        call_api!(player.set_armed_weapon(self.ptr, weapon)).unwrap_or(false)
+    }
+
+    pub fn get_weapon_data(&self, slot: i32) -> Option<(i32, i32)> {
+        let mut weapon_id = 0i32;
+        let mut ammo = 0i32;
+
+        call_api!(player.get_weapon_data(self.ptr, slot, &mut weapon_id, &mut ammo))
+            .filter(|&success| success)
+            .map(|_| (weapon_id, ammo))
+    }
+
+    pub fn get_weapon_state(&self) -> i32 {
+        call_api!(player.get_weapon_state(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn get_keys(&self) -> (i32, i32, i32) {
+        let mut keys = 0i32;
+        let mut updown = 0i32;
+        let mut leftright = 0i32;
+
+        call_api!(player.get_keys(self.ptr, &mut keys, &mut updown, &mut leftright));
+
+        (keys, updown, leftright)
+    }
+
+    pub fn get_camera_mode(&self) -> i32 {
+        call_api!(player.get_camera_mode(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn get_camera_zoom(&self) -> f32 {
+        call_api!(player.get_camera_zoom(self.ptr)).unwrap_or(0.0)
+    }
+
+    pub fn get_camera_aspect_ratio(&self) -> f32 {
+        call_api!(player.get_camera_aspect_ratio(self.ptr)).unwrap_or(0.0)
+    }
+
+    pub fn get_camera_front_vector(&self) -> (f32, f32, f32) {
+        let mut x = 0.0f32;
+        let mut y = 0.0f32;
+        let mut z = 0.0f32;
+
+        call_api!(player.get_camera_front_vector(self.ptr, &mut x, &mut y, &mut z));
+
+        (x, y, z)
+    }
+
+    pub fn get_animation_index(&self) -> i32 {
+        call_api!(player.get_animation_index(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn get_animation_flags(&self) -> i32 {
+        call_api!(player.get_animation_flags(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn get_animation_name(index: i32) -> Option<(String, String)> {
+        let mut lib = MaybeUninit::<CAPIStringView>::uninit();
+        let mut name = MaybeUninit::<CAPIStringView>::uninit();
+
+        call_api!(player.get_animation_name(index, lib.as_mut_ptr(), name.as_mut_ptr()))
+            .filter(|&success| success)
+            .and_then(|_| unsafe {
+                let lib_view = lib.assume_init();
+                let name_view = name.assume_init();
+
+                Some((
+                    lib_view.to_string().unwrap_or_default(),
+                    name_view.to_string().unwrap_or_default(),
+                ))
+            })
+    }
+
+    pub fn get_spectate_id(&self) -> i32 {
+        call_api!(player.get_player_spectate_id(self.ptr)).unwrap_or(-1)
+    }
+
+    pub fn get_spectate_type(&self) -> i32 {
+        call_api!(player.get_spectate_type(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn spectate_player(&self, target: &Player, mode: i32) -> bool {
+        call_api!(player.spectate_player(self.ptr, target.ptr, mode)).unwrap_or(false)
+    }
+
+    pub fn spectate_vehicle(&self, vehicle_ptr: bindings::types::VehiclePtr, mode: i32) -> bool {
+        call_api!(player.spectate_vehicle(self.ptr, vehicle_ptr, mode)).unwrap_or(false)
+    }
+
+    pub fn get_surfing_vehicle(&self) -> *const std::ffi::c_void {
+        call_api!(player.get_surfing_vehicle(self.ptr)).unwrap_or(std::ptr::null_mut())
+    }
+
+    pub fn get_surfing_object(&self) -> *const std::ffi::c_void {
+        call_api!(player.get_surfing_object(self.ptr)).unwrap_or(std::ptr::null_mut())
+    }
+
+    pub fn get_surfing_offsets(&self) -> (f32, f32, f32) {
+        let mut offset_x = 0.0f32;
+        let mut offset_y = 0.0f32;
+        let mut offset_z = 0.0f32;
+
+        call_api!(player.get_surfing_offsets(
+            self.ptr,
+            &mut offset_x,
+            &mut offset_y,
+            &mut offset_z
+        ));
+
+        (offset_x, offset_y, offset_z)
+    }
+
+    pub fn get_target_player(&self) -> Option<Player> {
+        call_api!(player.get_target_player(self.ptr)).and_then(|ptr| Player::from_ptr(ptr))
+    }
+
+    pub fn get_target_actor(&self) -> *const std::ffi::c_void {
+        call_api!(player.get_target_actor(self.ptr)).unwrap_or(std::ptr::null())
+    }
+
+    pub fn get_distance_from_point(&self, x: f32, y: f32, z: f32) -> f32 {
+        call_api!(player.get_distance_from_point(self.ptr, x, y, z)).unwrap_or(0.0)
+    }
+
+    pub fn is_in_range_of_point(&self, range: f32, x: f32, y: f32, z: f32) -> bool {
+        call_api!(player.is_in_range_of_point(self.ptr, range, x, y, z)).unwrap_or(false)
+    }
+
+    pub fn get_skill_level(&self, skill: i32) -> i32 {
+        call_api!(player.get_skill_level(self.ptr, skill)).unwrap_or(0)
+    }
+
+    pub fn set_skill_level(&self, weapon: u8, level: i32) -> bool {
+        call_api!(player.set_skill_level(self.ptr, weapon, level)).unwrap_or(false)
+    }
+
+    pub fn get_wanted_level(&self) -> i32 {
+        call_api!(player.get_wanted_level(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn set_wanted_level(&self, level: i32) -> bool {
+        call_api!(player.set_wanted_level(self.ptr, level)).unwrap_or(false)
+    }
+
+    pub fn get_drunk_level(&self) -> i32 {
+        call_api!(player.get_drunk_level(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn set_drunk_level(&self, level: i32) -> bool {
+        call_api!(player.set_drunk_level(self.ptr, level)).unwrap_or(false)
+    }
+
+    pub fn get_special_action(&self) -> i32 {
+        call_api!(player.get_special_action(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn set_special_action(&self, action: u32) -> bool {
+        call_api!(player.set_special_action(self.ptr, action)).unwrap_or(false)
+    }
+
+    pub fn get_fighting_style(&self) -> i32 {
+        call_api!(player.get_fighting_style(self.ptr)).unwrap_or(0)
+    }
+
+    pub fn set_fighting_style(&self, style: i32) -> bool {
+        call_api!(player.set_fighting_style(self.ptr, style)).unwrap_or(false)
+    }
+
+    pub fn force_class_selection(&self) -> bool {
+        call_api!(player.force_class_selection(self.ptr)).unwrap_or(false)
+    }
+
+    pub fn allow_teleport(&self, allow: bool) -> bool {
+        call_api!(player.allow_teleport(self.ptr, allow)).unwrap_or(false)
+    }
+
+    pub fn is_teleport_allowed(&self) -> bool {
+        call_api!(player.is_teleport_allowed(self.ptr)).unwrap_or(false)
+    }
+
+    pub fn allow_weapons(&self, allow: bool) -> bool {
+        call_api!(player.allow_weapons(self.ptr, allow)).unwrap_or(false)
+    }
+
+    pub fn are_weapons_allowed(&self) -> bool {
+        call_api!(player.are_weapons_allowed(self.ptr)).unwrap_or(false)
+    }
+
+    pub fn toggle_clock(&self, enable: bool) -> bool {
+        call_api!(player.toggle_clock(self.ptr, enable)).unwrap_or(false)
+    }
+
+    pub fn has_clock(&self) -> bool {
+        call_api!(player.has_clock(self.ptr)).unwrap_or(false)
     }
 }
 
