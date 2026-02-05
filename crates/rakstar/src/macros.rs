@@ -41,6 +41,16 @@ impl<T> FromCEvent<T> for T {
     }
 }
 
+pub trait GameData: Send + 'static {
+    fn new() -> Self
+    where
+        Self: Sized;
+
+    fn on_ready(&mut self) {}
+    fn on_reset(&mut self) {}
+    fn on_free(&mut self) {}
+}
+
 #[macro_export]
 macro_rules! handle_event {
     ($comp:expr, $method:ident, $args_ty:ty, $( ::<$T:ty>($field:ident) ),* ) => {

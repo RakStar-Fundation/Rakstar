@@ -1,9 +1,12 @@
 pub mod chat;
 pub mod command;
 pub mod events;
+pub mod feature;
+pub mod middleware;
 pub mod npc;
 pub mod player;
 pub mod player_object;
+pub mod registry;
 pub mod runtime;
 pub mod textdraw;
 pub mod utils;
@@ -11,6 +14,9 @@ pub mod vehicle;
 
 #[macro_use]
 pub mod macros;
+
+#[macro_use]
+pub mod entrypoint_new_macros;
 
 pub use bindings;
 
@@ -20,10 +26,15 @@ pub use command::{
     PlayerConstraints, StringConstraints,
 };
 pub use events::EventHandler;
-pub use macros::Component;
+pub use feature::{Feature, FeatureEvents, FeaturePriority, FeatureRegistry};
+pub use macros::GameData;
+pub use middleware::{
+    EventMiddleware, EventResult, Middleware, MiddlewarePriority, MiddlewareRegistry,
+};
 pub use npc::NPC;
 pub use player::Player;
 pub use player_object::PlayerObject;
+pub use registry::{get_feature_registry, get_middleware_registry};
 pub use runtime::spawn;
 pub use textdraw::TextDraw;
 pub use vehicle::Vehicle;
