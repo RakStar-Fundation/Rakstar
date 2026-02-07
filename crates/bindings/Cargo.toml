@@ -8,3 +8,4 @@ crate-type = ["lib"]
 
 [dependencies]
 libc = "0.2"
+libloading = "0.8"
