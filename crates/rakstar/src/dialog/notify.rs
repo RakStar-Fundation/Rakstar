@@ -6,7 +6,6 @@ pub fn send(
     button_response: u8,
     selected_item: i8,
     answer: String,
-
 ) {
     notify_dialog(
         dialog_id,
