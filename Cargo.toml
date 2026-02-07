@@ -6,10 +6,6 @@ members = [
     "examples/basic",
 ]
 
-
-
-
 [workspace.dependencies]
 encoding_rs = "0.8"
-
 
