@@ -1,4 +1,7 @@
-use crate::{Feature, FeatureEvents, FeaturePriority, GameData, Player};
+use crate::{
+    Feature, FeatureEvents, FeaturePriority, GameData, Player,
+    dialog::{self, notify},
+};
 use std::sync::{Arc, Mutex};
 
 pub struct DialogFeature {
@@ -26,25 +29,30 @@ impl Feature for DialogFeature {
 }
 
 impl FeatureEvents for DialogFeature {
-
-
- fn on_dialog_response(
+    fn on_dialog_response(
         &mut self,
-        _player: crate::Player,
-        _dialog_id: i32,
-        _response: i32,
-        _list_item: i32,
-        _input_text: String,
+        player: crate::Player,
+        dialog_id: i32,
+        response: i32,
+        list_item: i32,
+        input_text: String,
         _data: &Arc<Mutex<dyn crate::GameData>>,
     ) {
-          println!(
+        println!(
             "[DialogFeature] Player {} response: {} {} {} {}",
-                       _player.get_name(), 
-                      _dialog_id, 
-                      _response, 
-                       _list_item, 
-                       _input_text
+            player.get_name(),
+            dialog_id,
+            response,
+            list_item,
+            input_text
+        );
 
+        dialog::handler::notify_dialog(
+            dialog_id as u32,
+            player.get_id() as u32,
+            response as u8,
+            list_item as i8,
+            input_text,
         );
     }
 }
