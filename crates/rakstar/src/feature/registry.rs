@@ -1,4 +1,3 @@
-/// Registry for managing features
 use super::traits::FeatureEvents;
 use crate::{GameData, Player};
 use std::sync::{Arc, Mutex};
@@ -88,7 +87,13 @@ impl FeatureRegistry {
         command: String,
         data: &Arc<Mutex<dyn GameData>>,
     ) {
+        println!(
+            "[FeatureRegistry] Dispatching command '{}' to {} features",
+            command,
+            self.features.len()
+        );
         for feature in &mut self.features {
+            println!("[FeatureRegistry] Calling feature: {}", feature.name());
             feature.on_player_command_text(player, command.clone(), data);
         }
     }

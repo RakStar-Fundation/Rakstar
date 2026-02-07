@@ -1,36 +1,27 @@
-/// Feature system for modular gamemode logic
 use std::sync::{Arc, Mutex};
 
-/// Base trait for all features
 pub trait Feature: Send + Sync {
-    /// Unique name for this feature
     fn name(&self) -> &'static str;
 
-    /// Execution priority (lower value = higher priority)
     fn priority(&self) -> FeaturePriority {
         FeaturePriority::Normal
     }
 
-    /// Called when the game data is ready
     fn on_ready(&mut self, _data: &Arc<Mutex<dyn crate::GameData>>) {}
 
-    /// Called when the server is reset
     fn on_reset(&mut self, _data: &Arc<Mutex<dyn crate::GameData>>) {}
 
-    /// Called when the game data is being destroyed
     fn on_free(&mut self, _data: &Arc<Mutex<dyn crate::GameData>>) {}
 }
 
-/// Priority levels for feature execution
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum FeaturePriority {
-    Critical = 0, // RakStar internal systems
-    High = 100,   // Auth, critical user systems
-    Normal = 500, // Regular user features
-    Low = 1000,   // Logging, analytics
+    Critical = 0,
+    High = 100,
+    Normal = 500,
+    Low = 1000,
 }
 
-/// Trait for features that handle events
 pub trait FeatureEvents: Feature {
     fn on_player_connect(
         &mut self,

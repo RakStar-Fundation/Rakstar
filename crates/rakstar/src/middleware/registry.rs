@@ -1,16 +1,13 @@
-/// Registry for managing middlewares
 use super::traits::{EventMiddleware, EventResult};
 use crate::{GameData, Player};
 use std::sync::{Arc, Mutex};
 
-/// Registry for managing and dispatching middlewares
 pub struct MiddlewareRegistry {
     middlewares: Vec<Box<dyn EventMiddleware>>,
     sorted: bool,
 }
 
 impl MiddlewareRegistry {
-    /// Create a new middleware registry
     pub fn new() -> Self {
         Self {
             middlewares: Vec::new(),
@@ -18,13 +15,11 @@ impl MiddlewareRegistry {
         }
     }
 
-    /// Register a new middleware
     pub fn register<M: EventMiddleware + 'static>(&mut self, middleware: M) {
         self.middlewares.push(Box::new(middleware));
-        self.sorted = false; // Need to re-sort
+        self.sorted = false;
     }
 
-    /// Ensure middlewares are sorted by priority
     fn ensure_sorted(&mut self) {
         if !self.sorted {
             self.middlewares.sort_by_key(|m| m.priority());
@@ -32,8 +27,6 @@ impl MiddlewareRegistry {
         }
     }
 
-    /// Dispatch on_player_connect through middleware chain
-    /// Returns true if event should continue, false if blocked
     pub fn dispatch_player_connect(
         &mut self,
         player: Player,
@@ -49,7 +42,6 @@ impl MiddlewareRegistry {
         true
     }
 
-    /// Dispatch on_player_disconnect through middleware chain
     pub fn dispatch_player_disconnect(
         &mut self,
         player: Player,
@@ -85,6 +77,7 @@ impl MiddlewareRegistry {
         text: &mut String,
         data: &Arc<Mutex<dyn GameData>>,
     ) -> bool {
+        println!("dispatch player text");
         for middleware in &mut self.middlewares {
             match middleware.on_player_text(player, text, data) {
                 EventResult::Continue => continue,

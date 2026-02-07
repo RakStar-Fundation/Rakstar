@@ -65,18 +65,6 @@ macro_rules! entrypoint_new {
             $crate::handle_event_new!(on_player_command_text, $crate::Player, String);
             $crate::handle_event_new!(on_dialog_response, $crate::Player, i32, i32, i32, String);
 
-            unsafe extern "C" fn on_ready() {
-                if let Some(ref data) = GAMEDATA {
-                    data.lock().unwrap().on_ready();
-
-                    if let Some(feature_registry) = $crate::get_feature_registry() {
-                        feature_registry.lock().unwrap().on_ready(data);
-                    }
-                }
-
-            $crate::runtime::init();
-            $crate::events::internal::register_internal_handlers();
-
             let api_ref = $crate::macros::get_api().expect("API not initialized");
 
             if let Some(add_handler) = api_ref.event.add_handler {
@@ -93,14 +81,26 @@ macro_rules! entrypoint_new {
                     };
                 }
 
-                register_event!("OnPlayerConnect", on_player_connect);
-                register_event!("OnPlayerDisconnect", on_player_disconnect);
-                register_event!("OnPlayerSpawn", on_player_spawn);
-                register_event!("OnPlayerText", on_player_text);
-                register_event!("OnPlayerCommandText", on_player_command_text);
-                register_event!("OnDialogResponse", on_dialog_response);
+                register_event!("onPlayerConnect", on_player_connect);
+                register_event!("onPlayerDisconnect", on_player_disconnect);
+                register_event!("onPlayerSpawn", on_player_spawn);
+                register_event!("onPlayerText", on_player_text);
+                register_event!("onPlayerCommandText", on_player_command_text);
+                register_event!("onDialogResponse", on_dialog_response);
             }
-        }
+
+            unsafe extern "C" fn on_ready() {
+                if let Some(ref data) = GAMEDATA {
+                    data.lock().unwrap().on_ready();
+
+                    if let Some(feature_registry) = $crate::get_feature_registry() {
+                        feature_registry.lock().unwrap().on_ready(data);
+                    }
+                }
+
+                $crate::runtime::init();
+                $crate::events::internal::register_internal_handlers();
+            }
 
         unsafe extern "C" fn on_reset() {
             if let Some(ref data) = GAMEDATA {
@@ -247,6 +247,7 @@ macro_rules! handle_event_new {
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
                 let mut text = <$text_ty as $crate::macros::FromCEvent<_>>::from_c(*list.text);
 
+                println!("dispatch player text");
                 if let Some(middleware_registry) = $crate::get_middleware_registry() {
                     if !middleware_registry
                         .lock()
@@ -274,12 +275,21 @@ macro_rules! handle_event_new {
                 $crate::bindings::types::OnPlayerCommandText,
             >,
         ) -> bool {
+            println!("[DEBUG] on_player_command_text handler called");
+
             if let Some(ref data) = GAMEDATA {
                 let list = &*(*raw_args).list;
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
                 let command = <$cmd_ty as $crate::macros::FromCEvent<_>>::from_c(*list.command);
 
+                println!(
+                    "[DEBUG] Player: {}, Command: {}",
+                    player.get_name(),
+                    command
+                );
+
                 if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                    println!("[DEBUG] Dispatching to middleware registry");
                     if !middleware_registry
                         .lock()
                         .unwrap()
@@ -290,13 +300,14 @@ macro_rules! handle_event_new {
                 }
 
                 if let Some(feature_registry) = $crate::get_feature_registry() {
+                    println!("[DEBUG] Dispatching to feature registry");
                     feature_registry
                         .lock()
                         .unwrap()
                         .dispatch_player_command_text(player, command, data);
                 }
             }
-            true
+            false
         }
     };
 

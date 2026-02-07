@@ -1,3 +1,4 @@
+pub mod internal;
 mod registry;
 mod traits;
 
