@@ -229,6 +229,7 @@ dependencies = [
  "bindings",
  "encoding_rs",
  "omp",
+ "once_cell",
  "tokio",
 ]
 

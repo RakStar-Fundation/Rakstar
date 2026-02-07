@@ -1,4 +1,6 @@
+use super::handler::{DIALOG_MANAGER, DialogResponse};
 use omp::{dialogs::DialogStyle, players::Player};
+use tokio::sync::oneshot;
 
 pub struct DialogBuilder {
     title: String,
@@ -38,7 +40,7 @@ impl DialogBuilder {
         return self;
     }
 
-    pub fn send(self, to: Player) -> Self {
+    pub fn send(self, to: Player) -> (u32, oneshot::Receiver<DialogResponse>) {
         to.show_dialog(
             1,
             DialogStyle::List,
@@ -47,6 +49,9 @@ impl DialogBuilder {
             &self.buttons[0],
             &self.buttons[1],
         );
-        self
+
+        let mut manager = DIALOG_MANAGER.lock().unwrap();
+        let (_dialog_id, rx) = manager.send();
+        (_dialog_id, rx)
     }
 }
