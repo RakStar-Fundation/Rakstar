@@ -99,7 +99,7 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
             return false;
         }
     };
-    
+
     (*api).component.create = Some(*create_fn);
 
     // Load all other functions
@@ -132,7 +132,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).player.set_virtual_world,
         "Player_SetVirtualWorld\0"
     );
-    load_fn!(lib, api, (*api).player.reset_weapons, "Player_ResetWeapons\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player.reset_weapons,
+        "Player_ResetWeapons\0"
+    );
     load_fn!(lib, api, (*api).player.give_weapon, "Player_GiveWeapon\0");
     load_fn!(
         lib,
@@ -146,7 +151,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).player.remove_from_vehicle,
         "Player_RemoveFromVehicle\0"
     );
-    load_fn!(lib, api, (*api).player.is_in_vehicle, "Player_IsInVehicle\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player.is_in_vehicle,
+        "Player_IsInVehicle\0"
+    );
     load_fn!(
         lib,
         api,
@@ -384,7 +394,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).player.is_teleport_allowed,
         "Player_IsTeleportAllowed\0"
     );
-    load_fn!(lib, api, (*api).player.allow_weapons, "Player_AllowWeapons\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player.allow_weapons,
+        "Player_AllowWeapons\0"
+    );
     load_fn!(
         lib,
         api,
@@ -405,8 +420,18 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).vehicle.get_health, "Vehicle_GetHealth\0");
     load_fn!(lib, api, (*api).vehicle.set_health, "Vehicle_SetHealth\0");
     load_fn!(lib, api, (*api).vehicle.get_model, "Vehicle_GetModel\0");
-    load_fn!(lib, api, (*api).vehicle.get_interior, "Vehicle_GetInterior\0");
-    load_fn!(lib, api, (*api).vehicle.set_interior, "Vehicle_SetInterior\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).vehicle.get_interior,
+        "Vehicle_GetInterior\0"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).vehicle.set_interior,
+        "Vehicle_SetInterior\0"
+    );
     load_fn!(
         lib,
         api,
@@ -425,7 +450,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).dialog.hide, "Dialog_Hide\0");
 
     // PlayerObject functions
-    load_fn!(lib, api, (*api).player_object.create, "PlayerObject_Create\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.create,
+        "PlayerObject_Create\0"
+    );
     load_fn!(
         lib,
         api,
@@ -438,7 +468,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).player_object.from_id,
         "PlayerObject_FromID\0"
     );
-    load_fn!(lib, api, (*api).player_object.get_id, "PlayerObject_GetID\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player_object.get_id,
+        "PlayerObject_GetID\0"
+    );
     load_fn!(
         lib,
         api,
@@ -604,7 +639,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).checkpoint.is_player_in,
         "Checkpoint_IsPlayerIn\0"
     );
-    load_fn!(lib, api, (*api).checkpoint.is_active, "Checkpoint_IsActive\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).checkpoint.is_active,
+        "Checkpoint_IsActive\0"
+    );
     load_fn!(lib, api, (*api).checkpoint.get, "Checkpoint_Get\0");
 
     // RaceCheckpoint functions
@@ -643,8 +683,18 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).npc.get_pos, "NPC_GetPos\0");
     load_fn!(lib, api, (*api).npc.set_rot, "NPC_SetRot\0");
     load_fn!(lib, api, (*api).npc.get_rot, "NPC_GetRot\0");
-    load_fn!(lib, api, (*api).npc.set_facing_angle, "NPC_SetFacingAngle\0");
-    load_fn!(lib, api, (*api).npc.get_facing_angle, "NPC_GetFacingAngle\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.set_facing_angle,
+        "NPC_SetFacingAngle\0"
+    );
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.get_facing_angle,
+        "NPC_GetFacingAngle\0"
+    );
     load_fn!(
         lib,
         api,
@@ -676,7 +726,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).npc.set_armour, "NPC_SetArmour\0");
     load_fn!(lib, api, (*api).npc.get_armour, "NPC_GetArmour\0");
     load_fn!(lib, api, (*api).npc.is_dead, "NPC_IsDead\0");
-    load_fn!(lib, api, (*api).npc.set_invulnerable, "NPC_SetInvulnerable\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.set_invulnerable,
+        "NPC_SetInvulnerable\0"
+    );
     load_fn!(lib, api, (*api).npc.is_invulnerable, "NPC_IsInvulnerable\0");
     load_fn!(lib, api, (*api).npc.set_weapon, "NPC_SetWeapon\0");
     load_fn!(lib, api, (*api).npc.get_weapon, "NPC_GetWeapon\0");
@@ -684,7 +739,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).npc.get_ammo, "NPC_GetAmmo\0");
     load_fn!(lib, api, (*api).npc.set_ammo_in_clip, "NPC_SetAmmoInClip\0");
     load_fn!(lib, api, (*api).npc.get_ammo_in_clip, "NPC_GetAmmoInClip\0");
-    load_fn!(lib, api, (*api).npc.enable_reloading, "NPC_EnableReloading\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.enable_reloading,
+        "NPC_EnableReloading\0"
+    );
     load_fn!(
         lib,
         api,
@@ -704,7 +764,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).npc.is_infinite_ammo_enabled,
         "NPC_IsInfiniteAmmoEnabled\0"
     );
-    load_fn!(lib, api, (*api).npc.get_weapon_state, "NPC_GetWeaponState\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).npc.get_weapon_state,
+        "NPC_GetWeaponState\0"
+    );
     load_fn!(lib, api, (*api).npc.set_keys, "NPC_SetKeys\0");
     load_fn!(lib, api, (*api).npc.get_keys, "NPC_GetKeys\0");
     load_fn!(
@@ -757,14 +822,24 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).text_draw.set_box_color,
         "TextDraw_SetBoxColor\0"
     );
-    load_fn!(lib, api, (*api).text_draw.set_use_box, "TextDraw_SetUseBox\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_use_box,
+        "TextDraw_SetUseBox\0"
+    );
     load_fn!(
         lib,
         api,
         (*api).text_draw.set_outline,
         "TextDraw_SetOutline\0"
     );
-    load_fn!(lib, api, (*api).text_draw.set_shadow, "TextDraw_SetShadow\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_shadow,
+        "TextDraw_SetShadow\0"
+    );
     load_fn!(
         lib,
         api,
@@ -808,7 +883,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
         (*api).text_draw.hide_for_all,
         "TextDraw_HideForAll\0"
     );
-    load_fn!(lib, api, (*api).text_draw.set_string, "TextDraw_SetString\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).text_draw.set_string,
+        "TextDraw_SetString\0"
+    );
     load_fn!(
         lib,
         api,

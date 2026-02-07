@@ -1,5 +1,6 @@
 pub mod chat;
 pub mod command;
+pub mod dialog;
 pub mod events;
 pub mod feature;
 pub mod middleware;

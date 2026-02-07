@@ -13,7 +13,7 @@ pub unsafe fn register_internal_handlers() {
         Some(api) => api,
         None => return,
     };
-    
+
     let _add_handler = match api.event.add_handler {
         Some(handler) => handler,
         None => return,
