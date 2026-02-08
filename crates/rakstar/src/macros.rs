@@ -41,7 +41,7 @@ impl<T> FromCEvent<T> for T {
     }
 }
 
-pub trait GameData: Send + 'static {
+pub trait GameData: Send + Downcast + 'static {
     fn new() -> Self
     where
         Self: Sized;
@@ -50,6 +50,8 @@ pub trait GameData: Send + 'static {
     fn on_reset(&mut self) {}
     fn on_free(&mut self) {}
 }
+
+impl_downcast!(GameData);
 
 #[macro_export]
 macro_rules! handle_event {
@@ -339,3 +341,4 @@ pub trait Component: Default {
 pub use bindings::api::{OmpApi as __OmpApi, initialize_capi as __initialize_capi};
 #[doc(hidden)]
 pub use bindings::types::ComponentVersion as __ComponentVersion;
+use downcast_rs::{Downcast, impl_downcast};

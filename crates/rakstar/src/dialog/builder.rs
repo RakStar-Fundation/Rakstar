@@ -40,10 +40,10 @@ impl DialogBuilder {
         return self;
     }
 
-    pub fn send(self, to: Player) -> (u32, oneshot::Receiver<DialogResponse>) {
+    pub fn send(self, to: crate::player::Player) -> (u32, oneshot::Receiver<DialogResponse>) {
         to.show_dialog(
             1,
-            DialogStyle::List,
+            crate::player::DialogStyle::MsgBox,
             &self.title,
             &self.body,
             &self.buttons[0],

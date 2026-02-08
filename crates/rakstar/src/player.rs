@@ -7,6 +7,8 @@ pub struct Player {
     ptr: PlayerPtr,
 }
 
+unsafe impl Send for Player {}
+
 impl Player {
     pub fn from_ptr(ptr: PlayerPtr) -> Option<Self> {
         (!ptr.is_null()).then(|| Self { ptr })

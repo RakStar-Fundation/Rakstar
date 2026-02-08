@@ -12,3 +12,4 @@ omp = "2.1.0"
 bindings = { path = "../bindings" }
 tokio = { version = "1.49.0", features = ["full"] }
 once_cell = "1.19"
+downcast-rs = "2.0.2"
