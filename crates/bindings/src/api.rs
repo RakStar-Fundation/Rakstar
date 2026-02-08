@@ -109,6 +109,12 @@ pub unsafe fn initialize_capi(api: *mut OmpApi) -> bool {
     load_fn!(lib, api, (*api).player.get_name, "Player_GetName\0");
     load_fn!(lib, api, (*api).player.from_id, "Player_FromID\0");
     load_fn!(lib, api, (*api).player.get_id, "Player_GetID\0");
+    load_fn!(
+        lib,
+        api,
+        (*api).player.send_client_message,
+        "Player_SendClientMessage\0"
+    );
     load_fn!(lib, api, (*api).player.kick, "Player_Kick\0");
     load_fn!(lib, api, (*api).player.ban, "Player_Ban\0");
     load_fn!(lib, api, (*api).player.spawn, "Player_Spawn\0");
