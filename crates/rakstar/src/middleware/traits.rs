@@ -1,6 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
-pub trait Middleware: Send + Sync {
+use crate::GameData;
+
+pub trait Middleware<T: GameData>: Send + Sync {
     fn name(&self) -> &'static str;
 
     fn priority(&self) -> MiddlewarePriority {
@@ -23,12 +25,8 @@ pub enum EventResult {
     Block,
 }
 
-pub trait EventMiddleware: Middleware {
-    fn on_player_connect(
-        &mut self,
-        _player: crate::Player,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
-    ) -> EventResult {
+pub trait EventMiddleware<T: GameData>: Middleware<T> {
+    fn on_player_connect(&mut self, _player: crate::Player, _data: Arc<T>) -> EventResult {
         EventResult::Continue
     }
 
@@ -36,24 +34,20 @@ pub trait EventMiddleware: Middleware {
         &mut self,
         _player: crate::Player,
         _reason: i32,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
+        _data: Arc<T>,
     ) -> EventResult {
         EventResult::Continue
     }
 
-    fn on_player_spawn(
-        &mut self,
-        _player: crate::Player,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
-    ) -> EventResult {
+    fn on_player_spawn(&mut self, _player: crate::Player, _data: Arc<T>) -> EventResult {
         EventResult::Continue
     }
 
     fn on_player_text(
         &mut self,
         _player: crate::Player,
-        _text: &mut String,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
+        _text: String,
+        _data: Arc<T>,
     ) -> EventResult {
         EventResult::Continue
     }
@@ -62,7 +56,7 @@ pub trait EventMiddleware: Middleware {
         &mut self,
         _player: crate::Player,
         _command: String,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
+        _data: Arc<T>,
     ) -> EventResult {
         EventResult::Continue
     }
@@ -74,7 +68,7 @@ pub trait EventMiddleware: Middleware {
         _response: i32,
         _list_item: i32,
         _input_text: String,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
+        _data: Arc<T>,
     ) -> EventResult {
         EventResult::Continue
     }

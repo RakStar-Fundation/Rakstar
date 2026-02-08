@@ -3,16 +3,18 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-pub struct AntiFloodMiddleware {
+pub struct AntiFloodMiddleware<T: GameData> {
     last_messages: Arc<Mutex<HashMap<i32, Instant>>>,
     min_interval: Duration,
+    _phantom: std::marker::PhantomData<T>,
 }
 
-impl AntiFloodMiddleware {
+impl<T: GameData> AntiFloodMiddleware<T> {
     pub fn new() -> Self {
         Self {
             last_messages: Arc::new(Mutex::new(HashMap::new())),
             min_interval: Duration::from_millis(500),
+            _phantom: std::marker::PhantomData,
         }
     }
 
@@ -31,7 +33,7 @@ impl AntiFloodMiddleware {
     }
 }
 
-impl Middleware for AntiFloodMiddleware {
+impl<T: GameData> Middleware<T> for AntiFloodMiddleware<T> {
     fn name(&self) -> &'static str {
         "RakStar::AntiFlood"
     }
@@ -41,14 +43,8 @@ impl Middleware for AntiFloodMiddleware {
     }
 }
 
-impl EventMiddleware for AntiFloodMiddleware {
-    fn on_player_text(
-        &mut self,
-        player: Player,
-        _text: &mut String,
-        _data: &Arc<Mutex<dyn GameData>>,
-    ) -> EventResult {
-        println!("anti flood system");
+impl<T: GameData> EventMiddleware<T> for AntiFloodMiddleware<T> {
+    fn on_player_text(&mut self, player: Player, _text: String, _data: Arc<T>) -> EventResult {
         if self.check_flood(player.get_id()) {
             println!("[AntiFlood] Blocked flood from {}", player.get_name());
             return EventResult::Block;
@@ -60,7 +56,7 @@ impl EventMiddleware for AntiFloodMiddleware {
         &mut self,
         player: Player,
         _command: String,
-        _data: &Arc<Mutex<dyn GameData>>,
+        _data: Arc<T>,
     ) -> EventResult {
         if self.check_flood(player.get_id()) {
             println!(
@@ -73,7 +69,7 @@ impl EventMiddleware for AntiFloodMiddleware {
     }
 }
 
-impl Default for AntiFloodMiddleware {
+impl<T: GameData> Default for AntiFloodMiddleware<T> {
     fn default() -> Self {
         Self::new()
     }

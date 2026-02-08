@@ -1,28 +1,23 @@
-use crate::{FeatureRegistry, MiddlewareRegistry};
-use std::sync::{Mutex, OnceLock};
+use crate::{FeatureRegistry, GameData, MiddlewareRegistry};
+use std::sync::Mutex;
 
-static FEATURE_REGISTRY: OnceLock<Mutex<FeatureRegistry>> = OnceLock::new();
-static MIDDLEWARE_REGISTRY: OnceLock<Mutex<MiddlewareRegistry>> = OnceLock::new();
+static FEATURE_REGISTRY: Mutex<Option<usize>> = Mutex::new(None);
+static MIDDLEWARE_REGISTRY: Mutex<Option<usize>> = Mutex::new(None);
 
-pub fn get_feature_registry() -> Option<&'static Mutex<FeatureRegistry>> {
-    FEATURE_REGISTRY.get()
+pub fn get_feature_registry<T: GameData>() -> Option<&'static Mutex<FeatureRegistry<T>>> {
+    let addr = (*FEATURE_REGISTRY.lock().unwrap())?;
+    unsafe { (addr as *const Mutex<FeatureRegistry<T>>).as_ref() }
 }
 
-pub fn get_middleware_registry() -> Option<&'static Mutex<MiddlewareRegistry>> {
-    MIDDLEWARE_REGISTRY.get()
+pub fn get_middleware_registry<T: GameData>() -> Option<&'static Mutex<MiddlewareRegistry<T>>> {
+    let addr = (*MIDDLEWARE_REGISTRY.lock().unwrap())?;
+    unsafe { (addr as *const Mutex<MiddlewareRegistry<T>>).as_ref() }
 }
 
-pub fn init_registries() {
-    let _ = FEATURE_REGISTRY.set(Mutex::new(FeatureRegistry::new()));
-    let _ = MIDDLEWARE_REGISTRY.set(Mutex::new(MiddlewareRegistry::new()));
+pub fn set_feature_registry<T: GameData>(registry: &'static Mutex<FeatureRegistry<T>>) {
+    *FEATURE_REGISTRY.lock().unwrap() = Some(registry as *const _ as usize);
+}
 
-    if let Some(feature_registry) = get_feature_registry() {
-        let mut registry = feature_registry.lock().unwrap();
-        crate::feature::internal::register_internal_features(&mut registry);
-    }
-
-    if let Some(middleware_registry) = get_middleware_registry() {
-        let mut registry = middleware_registry.lock().unwrap();
-        crate::middleware::internal::register_internal_middlewares(&mut registry);
-    }
+pub fn set_middleware_registry<T: GameData>(registry: &'static Mutex<MiddlewareRegistry<T>>) {
+    *MIDDLEWARE_REGISTRY.lock().unwrap() = Some(registry as *const _ as usize);
 }

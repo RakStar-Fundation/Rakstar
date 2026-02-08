@@ -7,7 +7,7 @@ macro_rules! entrypoint_new {
         $(, features: [ $($feature:expr),* $(,)? ])?
         $(, middlewares: [ $($middleware:expr),* $(,)? ])?
     ) => {
-        static mut GAMEDATA: Option<::std::sync::Arc<::std::sync::Mutex<dyn $crate::GameData>>> = None;
+        static mut GAMEDATA: Option<::std::sync::Arc<$data>> = None;
 
         #[unsafe(no_mangle)]
         pub unsafe extern "C" fn ComponentEntryPoint() -> *mut ::std::ffi::c_void {
@@ -26,14 +26,40 @@ macro_rules! entrypoint_new {
             let api = api_uninit.assume_init();
             let _ = $crate::macros::set_api(api);
 
-            let data = Arc::new(Mutex::new(<$data>::new()));
+            let data = Arc::new(<$data>::new());
             GAMEDATA = Some(data.clone());
 
-            $crate::registry::init_registries();
+            static FEATURE_REGISTRY: ::std::sync::OnceLock<::std::sync::Mutex<$crate::FeatureRegistry<$data>>> =
+                ::std::sync::OnceLock::new();
+            static MIDDLEWARE_REGISTRY: ::std::sync::OnceLock<::std::sync::Mutex<$crate::MiddlewareRegistry<$data>>> =
+                ::std::sync::OnceLock::new();
+
+            let _ = FEATURE_REGISTRY.set(::std::sync::Mutex::new($crate::FeatureRegistry::<$data>::new()));
+            let _ = MIDDLEWARE_REGISTRY.set(::std::sync::Mutex::new($crate::MiddlewareRegistry::<$data>::new()));
+
+            let feature_registry_ref = FEATURE_REGISTRY.get().unwrap();
+            let middleware_registry_ref = MIDDLEWARE_REGISTRY.get().unwrap();
+
+            $crate::registry::set_feature_registry::<$data>(
+                unsafe { ::std::mem::transmute(feature_registry_ref) }
+            );
+            $crate::registry::set_middleware_registry::<$data>(
+                unsafe { ::std::mem::transmute(middleware_registry_ref) }
+            );
+
+            {
+                let mut registry = feature_registry_ref.lock().unwrap();
+                $crate::feature::internal::register_internal_features::<$data>(&mut registry);
+            }
+
+            {
+                let mut registry = middleware_registry_ref.lock().unwrap();
+                $crate::middleware::internal::register_internal_middlewares::<$data>(&mut registry);
+            }
 
             $(
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
-                    let mut registry = middleware_registry.lock().unwrap();
+                {
+                    let mut registry = middleware_registry_ref.lock().unwrap();
                     $(
                         registry.register($middleware);
                     )*
@@ -41,8 +67,8 @@ macro_rules! entrypoint_new {
             )?
 
             $(
-                if let Some(feature_registry) = $crate::get_feature_registry() {
-                    let mut registry = feature_registry.lock().unwrap();
+                {
+                    let mut registry = feature_registry_ref.lock().unwrap();
                     $(
                         registry.register($feature);
                     )*
@@ -58,12 +84,12 @@ macro_rules! entrypoint_new {
 
             let name = CString::new($name).unwrap();
 
-            $crate::handle_event_new!(on_player_connect, $crate::Player);
-            $crate::handle_event_new!(on_player_disconnect, $crate::Player, i32);
-            $crate::handle_event_new!(on_player_spawn, $crate::Player);
-            $crate::handle_event_new!(on_player_text, $crate::Player, String);
-            $crate::handle_event_new!(on_player_command_text, $crate::Player, String);
-            $crate::handle_event_new!(on_dialog_response, $crate::Player, i32, i32, i32, String);
+            $crate::handle_event_new!($data, on_player_connect, $crate::Player);
+            $crate::handle_event_new!($data, on_player_disconnect, $crate::Player, i32);
+            $crate::handle_event_new!($data, on_player_spawn, $crate::Player);
+            $crate::handle_event_new!($data, on_player_text, $crate::Player, String);
+            $crate::handle_event_new!($data, on_player_command_text, $crate::Player, String);
+            $crate::handle_event_new!($data, on_dialog_response, $crate::Player, i32, i32, i32, String);
 
             let api_ref = $crate::macros::get_api().expect("API not initialized");
 
@@ -91,10 +117,10 @@ macro_rules! entrypoint_new {
 
             unsafe extern "C" fn on_ready() {
                 if let Some(ref data) = GAMEDATA {
-                    data.lock().unwrap().on_ready();
+                    data.on_ready();
 
-                    if let Some(feature_registry) = $crate::get_feature_registry() {
-                        feature_registry.lock().unwrap().on_ready(data);
+                    if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
+                        feature_registry.lock().unwrap().on_ready(data.clone());
                     }
                 }
 
@@ -104,20 +130,20 @@ macro_rules! entrypoint_new {
 
         unsafe extern "C" fn on_reset() {
             if let Some(ref data) = GAMEDATA {
-                data.lock().unwrap().on_reset();
+                data.on_reset();
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
-                    feature_registry.lock().unwrap().on_reset(data);
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
+                    feature_registry.lock().unwrap().on_reset(data.clone());
                 }
             }
         }
 
         unsafe extern "C" fn on_free() {
             if let Some(ref data) = GAMEDATA {
-                data.lock().unwrap().on_free();
+                data.on_free();
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
-                    feature_registry.lock().unwrap().on_free(data);
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
+                    feature_registry.lock().unwrap().on_free(data.clone());
                 }
             }
         }
@@ -142,7 +168,7 @@ macro_rules! entrypoint_new {
 
 #[macro_export]
 macro_rules! handle_event_new {
-    (on_player_connect, $player_ty:ty) => {
+    ($data:ty, on_player_connect, $player_ty:ty) => {
         unsafe extern "C" fn on_player_connect(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnPlayerConnect,
@@ -152,28 +178,28 @@ macro_rules! handle_event_new {
                 let list = &*(*raw_args).list;
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
 
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
                     if !middleware_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_connect(player, data)
+                        .dispatch_player_connect(player, data.clone())
                     {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
                     feature_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_connect(player, data);
+                        .dispatch_player_connect(player, data.clone());
                 }
             }
             true
         }
     };
 
-    (on_player_disconnect, $player_ty:ty, $reason_ty:ty) => {
+    ($data:ty, on_player_disconnect, $player_ty:ty, $reason_ty:ty) => {
         unsafe extern "C" fn on_player_disconnect(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnPlayerDisconnect,
@@ -184,28 +210,29 @@ macro_rules! handle_event_new {
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
                 let reason = <$reason_ty as $crate::macros::FromCEvent<_>>::from_c(*list.reason);
 
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
                     if !middleware_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_disconnect(player, reason, data)
+                        .dispatch_player_disconnect(player, reason, data.clone())
                     {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
-                    feature_registry
-                        .lock()
-                        .unwrap()
-                        .dispatch_player_disconnect(player, reason, data);
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
+                    feature_registry.lock().unwrap().dispatch_player_disconnect(
+                        player,
+                        reason,
+                        data.clone(),
+                    );
                 }
             }
             true
         }
     };
 
-    (on_player_spawn, $player_ty:ty) => {
+    ($data:ty, on_player_spawn, $player_ty:ty) => {
         unsafe extern "C" fn on_player_spawn(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnPlayerSpawn,
@@ -215,28 +242,28 @@ macro_rules! handle_event_new {
                 let list = &*(*raw_args).list;
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
 
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
                     if !middleware_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_spawn(player, data)
+                        .dispatch_player_spawn(player, data.clone())
                     {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
                     feature_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_spawn(player, data);
+                        .dispatch_player_spawn(player, data.clone());
                 }
             }
             true
         }
     };
 
-    (on_player_text, $player_ty:ty, $text_ty:ty) => {
+    ($data:ty, on_player_text, $player_ty:ty, $text_ty:ty) => {
         unsafe extern "C" fn on_player_text(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnPlayerText,
@@ -245,31 +272,33 @@ macro_rules! handle_event_new {
             if let Some(ref data) = GAMEDATA {
                 let list = &*(*raw_args).list;
                 let player = <$player_ty as $crate::macros::FromCEvent<_>>::from_c(*list.player);
-                let mut text = <$text_ty as $crate::macros::FromCEvent<_>>::from_c(*list.text);
+                let text = <$text_ty as $crate::macros::FromCEvent<_>>::from_c(*list.text);
 
-                println!("dispatch player text");
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
-                    if !middleware_registry
-                        .lock()
-                        .unwrap()
-                        .dispatch_player_text(player, &mut text, data)
-                    {
+                player.send_client_message(0xffffffff, "hello");
+
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
+                    if !middleware_registry.lock().unwrap().dispatch_player_text(
+                        player,
+                        text.clone(),
+                        data.clone(),
+                    ) {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
-                    feature_registry
-                        .lock()
-                        .unwrap()
-                        .dispatch_player_text(player, text, data);
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
+                    feature_registry.lock().unwrap().dispatch_player_text(
+                        player,
+                        text,
+                        data.clone(),
+                    );
                 }
             }
             true
         }
     };
 
-    (on_player_command_text, $player_ty:ty, $cmd_ty:ty) => {
+    ($data:ty, on_player_command_text, $player_ty:ty, $cmd_ty:ty) => {
         unsafe extern "C" fn on_player_command_text(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnPlayerCommandText,
@@ -288,30 +317,30 @@ macro_rules! handle_event_new {
                     command
                 );
 
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
                     println!("[DEBUG] Dispatching to middleware registry");
                     if !middleware_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_command_text(player, command.clone(), data)
+                        .dispatch_player_command_text(player, command.clone(), data.clone())
                     {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
                     println!("[DEBUG] Dispatching to feature registry");
                     feature_registry
                         .lock()
                         .unwrap()
-                        .dispatch_player_command_text(player, command, data);
+                        .dispatch_player_command_text(player, command, data.clone());
                 }
             }
             false
         }
     };
 
-    (on_dialog_response, $player_ty:ty, $($arg_ty:ty),+) => {
+    ($data:ty, on_dialog_response, $player_ty:ty, $($arg_ty:ty),+) => {
         unsafe extern "C" fn on_dialog_response(
             raw_args: *mut $crate::bindings::types::EventArgs<
                 $crate::bindings::types::OnDialogResponse,
@@ -325,7 +354,7 @@ macro_rules! handle_event_new {
                 let list_item = *list.listItem;
                 let input_text = <String as $crate::macros::FromCEvent<_>>::from_c(*list.inputText);
 
-                if let Some(middleware_registry) = $crate::get_middleware_registry() {
+                if let Some(middleware_registry) = $crate::get_middleware_registry::<$data>() {
                     if !middleware_registry
                         .lock()
                         .unwrap()
@@ -335,16 +364,21 @@ macro_rules! handle_event_new {
                             response,
                             list_item,
                             input_text.clone(),
-                            data,
+                            data.clone(),
                         )
                     {
                         return true;
                     }
                 }
 
-                if let Some(feature_registry) = $crate::get_feature_registry() {
+                if let Some(feature_registry) = $crate::get_feature_registry::<$data>() {
                     feature_registry.lock().unwrap().dispatch_dialog_response(
-                        player, dialog_id, response, list_item, input_text, data,
+                        player,
+                        dialog_id,
+                        response,
+                        list_item,
+                        input_text,
+                        data.clone(),
                     );
                 }
             }

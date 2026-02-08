@@ -2,9 +2,9 @@ mod anti_flood;
 
 pub use anti_flood::AntiFloodMiddleware;
 
-use crate::MiddlewareRegistry;
+use crate::{GameData, MiddlewareRegistry};
 
-pub fn register_internal_middlewares(registry: &mut MiddlewareRegistry) {
-    registry.register(AntiFloodMiddleware::new());
+pub fn register_internal_middlewares<T: GameData>(registry: &mut MiddlewareRegistry<T>) {
+    registry.register(AntiFloodMiddleware::<T>::new());
     println!("[RakStar] Registered internal middleware: AntiFloodMiddleware");
 }

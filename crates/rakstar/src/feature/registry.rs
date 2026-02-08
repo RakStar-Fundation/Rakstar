@@ -1,13 +1,13 @@
 use super::traits::FeatureEvents;
 use crate::{GameData, Player};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
-pub struct FeatureRegistry {
-    features: Vec<Box<dyn FeatureEvents>>,
+pub struct FeatureRegistry<T: GameData> {
+    features: Vec<Box<dyn FeatureEvents<T>>>,
     sorted: bool,
 }
 
-impl FeatureRegistry {
+impl<T: GameData> FeatureRegistry<T> {
     pub fn new() -> Self {
         Self {
             features: Vec::new(),
@@ -15,7 +15,7 @@ impl FeatureRegistry {
         }
     }
 
-    pub fn register<F: FeatureEvents + 'static>(&mut self, feature: F) {
+    pub fn register<F: FeatureEvents<T> + 'static>(&mut self, feature: F) {
         self.features.push(Box::new(feature));
         self.sorted = false;
     }
@@ -27,66 +27,51 @@ impl FeatureRegistry {
         }
     }
 
-    pub fn on_ready(&mut self, data: &Arc<Mutex<dyn GameData>>) {
+    pub fn on_ready(&mut self, data: Arc<T>) {
         self.ensure_sorted();
         for feature in &mut self.features {
-            feature.on_ready(data);
+            feature.on_ready(data.clone());
         }
     }
 
-    pub fn on_reset(&mut self, data: &Arc<Mutex<dyn GameData>>) {
+    pub fn on_reset(&mut self, data: Arc<T>) {
         for feature in &mut self.features {
-            feature.on_reset(data);
+            feature.on_reset(data.clone());
         }
     }
 
-    pub fn on_free(&mut self, data: &Arc<Mutex<dyn GameData>>) {
+    pub fn on_free(&mut self, data: Arc<T>) {
         for feature in &mut self.features {
-            feature.on_free(data);
+            feature.on_free(data.clone());
         }
     }
 
-    pub fn dispatch_player_connect(&mut self, player: Player, data: &Arc<Mutex<dyn GameData>>) {
+    pub fn dispatch_player_connect(&mut self, player: Player, data: Arc<T>) {
         self.ensure_sorted();
         for feature in &mut self.features {
-            feature.on_player_connect(player, data);
+            feature.on_player_connect(player, data.clone());
         }
     }
 
-    pub fn dispatch_player_disconnect(
-        &mut self,
-        player: Player,
-        reason: i32,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) {
+    pub fn dispatch_player_disconnect(&mut self, player: Player, reason: i32, data: Arc<T>) {
         for feature in &mut self.features {
-            feature.on_player_disconnect(player, reason, data);
+            feature.on_player_disconnect(player, reason, data.clone());
         }
     }
 
-    pub fn dispatch_player_spawn(&mut self, player: Player, data: &Arc<Mutex<dyn GameData>>) {
+    pub fn dispatch_player_spawn(&mut self, player: Player, data: Arc<T>) {
         for feature in &mut self.features {
-            feature.on_player_spawn(player, data);
+            feature.on_player_spawn(player, data.clone());
         }
     }
 
-    pub fn dispatch_player_text(
-        &mut self,
-        player: Player,
-        text: String,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) {
+    pub fn dispatch_player_text(&mut self, player: Player, text: String, data: Arc<T>) {
         for feature in &mut self.features {
-            feature.on_player_text(player, text.clone(), data);
+            feature.on_player_text(player, text.clone(), data.clone());
         }
     }
 
-    pub fn dispatch_player_command_text(
-        &mut self,
-        player: Player,
-        command: String,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) {
+    pub fn dispatch_player_command_text(&mut self, player: Player, command: String, data: Arc<T>) {
         println!(
             "[FeatureRegistry] Dispatching command '{}' to {} features",
             command,
@@ -94,7 +79,7 @@ impl FeatureRegistry {
         );
         for feature in &mut self.features {
             println!("[FeatureRegistry] Calling feature: {}", feature.name());
-            feature.on_player_command_text(player, command.clone(), data);
+            feature.on_player_command_text(player, command.clone(), data.clone());
         }
     }
 
@@ -105,7 +90,7 @@ impl FeatureRegistry {
         response: i32,
         list_item: i32,
         input_text: String,
-        data: &Arc<Mutex<dyn GameData>>,
+        data: Arc<T>,
     ) {
         for feature in &mut self.features {
             feature.on_dialog_response(
@@ -114,13 +99,13 @@ impl FeatureRegistry {
                 response,
                 list_item,
                 input_text.clone(),
-                data,
+                data.clone(),
             );
         }
     }
 }
 
-impl Default for FeatureRegistry {
+impl<T: GameData> Default for FeatureRegistry<T> {
     fn default() -> Self {
         Self::new()
     }

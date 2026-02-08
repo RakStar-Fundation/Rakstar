@@ -1,20 +1,21 @@
-use crate::{
-    Feature, FeatureEvents, FeaturePriority, GameData, Player,
-    dialog::{self, notify},
-};
-use std::sync::{Arc, Mutex};
+use crate::{Feature, FeatureEvents, FeaturePriority, GameData, Player, dialog};
+use std::sync::Arc;
 
-pub struct DialogFeature {
+pub struct DialogFeature<T: GameData> {
     enabled: bool,
+    _phantom: std::marker::PhantomData<T>,
 }
 
-impl DialogFeature {
+impl<T: GameData> DialogFeature<T> {
     pub fn new() -> Self {
-        Self { enabled: true }
+        Self {
+            enabled: true,
+            _phantom: std::marker::PhantomData,
+        }
     }
 }
 
-impl Feature for DialogFeature {
+impl<T: GameData> Feature<T> for DialogFeature<T> {
     fn name(&self) -> &'static str {
         "RakStar::Dialog"
     }
@@ -23,12 +24,12 @@ impl Feature for DialogFeature {
         FeaturePriority::Critical
     }
 
-    fn on_ready(&mut self, _data: &Arc<Mutex<dyn GameData>>) {
+    fn on_ready(&mut self, _data: Arc<T>) {
         println!("[DialogFeature] Command system ready");
     }
 }
 
-impl FeatureEvents for DialogFeature {
+impl<T: GameData> FeatureEvents<T> for DialogFeature<T> {
     fn on_dialog_response(
         &mut self,
         player: crate::Player,
@@ -36,7 +37,7 @@ impl FeatureEvents for DialogFeature {
         response: i32,
         list_item: i32,
         input_text: String,
-        _data: &Arc<Mutex<dyn crate::GameData>>,
+        _data: Arc<T>,
     ) {
         println!(
             "[DialogFeature] Player {} response: {} {} {} {}",
@@ -57,7 +58,7 @@ impl FeatureEvents for DialogFeature {
     }
 }
 
-impl Default for DialogFeature {
+impl<T: GameData> Default for DialogFeature<T> {
     fn default() -> Self {
         Self::new()
     }

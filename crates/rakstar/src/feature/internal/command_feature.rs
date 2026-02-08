@@ -1,17 +1,21 @@
 use crate::{Feature, FeatureEvents, FeaturePriority, GameData, Player};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
-pub struct CommandFeature {
+pub struct CommandFeature<T: GameData> {
     enabled: bool,
+    _phantom: std::marker::PhantomData<T>,
 }
 
-impl CommandFeature {
+impl<T: GameData> CommandFeature<T> {
     pub fn new() -> Self {
-        Self { enabled: true }
+        Self {
+            enabled: true,
+            _phantom: std::marker::PhantomData,
+        }
     }
 }
 
-impl Feature for CommandFeature {
+impl<T: GameData> Feature<T> for CommandFeature<T> {
     fn name(&self) -> &'static str {
         "RakStar::Commands"
     }
@@ -20,18 +24,13 @@ impl Feature for CommandFeature {
         FeaturePriority::Critical
     }
 
-    fn on_ready(&mut self, _data: &Arc<Mutex<dyn GameData>>) {
+    fn on_ready(&mut self, _data: Arc<T>) {
         println!("[CommandFeature] Command system ready");
     }
 }
 
-impl FeatureEvents for CommandFeature {
-    fn on_player_command_text(
-        &mut self,
-        player: Player,
-        command: String,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) {
+impl<T: GameData> FeatureEvents<T> for CommandFeature<T> {
+    fn on_player_command_text(&mut self, player: Player, command: String, _data: Arc<T>) {
         if !self.enabled {
             return;
         }
@@ -44,7 +43,7 @@ impl FeatureEvents for CommandFeature {
     }
 }
 
-impl Default for CommandFeature {
+impl<T: GameData> Default for CommandFeature<T> {
     fn default() -> Self {
         Self::new()
     }

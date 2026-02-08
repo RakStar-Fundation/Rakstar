@@ -1,13 +1,13 @@
 use super::traits::{EventMiddleware, EventResult};
 use crate::{GameData, Player};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
-pub struct MiddlewareRegistry {
-    middlewares: Vec<Box<dyn EventMiddleware>>,
+pub struct MiddlewareRegistry<T: GameData> {
+    middlewares: Vec<Box<dyn EventMiddleware<T>>>,
     sorted: bool,
 }
 
-impl MiddlewareRegistry {
+impl<T: GameData> MiddlewareRegistry<T> {
     pub fn new() -> Self {
         Self {
             middlewares: Vec::new(),
@@ -15,7 +15,7 @@ impl MiddlewareRegistry {
         }
     }
 
-    pub fn register<M: EventMiddleware + 'static>(&mut self, middleware: M) {
+    pub fn register<M: EventMiddleware<T> + 'static>(&mut self, middleware: M) {
         self.middlewares.push(Box::new(middleware));
         self.sorted = false;
     }
@@ -27,14 +27,10 @@ impl MiddlewareRegistry {
         }
     }
 
-    pub fn dispatch_player_connect(
-        &mut self,
-        player: Player,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) -> bool {
+    pub fn dispatch_player_connect(&mut self, player: Player, data: Arc<T>) -> bool {
         self.ensure_sorted();
         for middleware in &mut self.middlewares {
-            match middleware.on_player_connect(player, data) {
+            match middleware.on_player_connect(player, data.clone()) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
             }
@@ -46,10 +42,10 @@ impl MiddlewareRegistry {
         &mut self,
         player: Player,
         reason: i32,
-        data: &Arc<Mutex<dyn GameData>>,
+        data: Arc<T>,
     ) -> bool {
         for middleware in &mut self.middlewares {
-            match middleware.on_player_disconnect(player, reason, data) {
+            match middleware.on_player_disconnect(player, reason, data.clone()) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
             }
@@ -57,13 +53,9 @@ impl MiddlewareRegistry {
         true
     }
 
-    pub fn dispatch_player_spawn(
-        &mut self,
-        player: Player,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) -> bool {
+    pub fn dispatch_player_spawn(&mut self, player: Player, data: Arc<T>) -> bool {
         for middleware in &mut self.middlewares {
-            match middleware.on_player_spawn(player, data) {
+            match middleware.on_player_spawn(player, data.clone()) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
             }
@@ -71,15 +63,9 @@ impl MiddlewareRegistry {
         true
     }
 
-    pub fn dispatch_player_text(
-        &mut self,
-        player: Player,
-        text: &mut String,
-        data: &Arc<Mutex<dyn GameData>>,
-    ) -> bool {
-        println!("dispatch player text");
+    pub fn dispatch_player_text(&mut self, player: Player, text: String, data: Arc<T>) -> bool {
         for middleware in &mut self.middlewares {
-            match middleware.on_player_text(player, text, data) {
+            match middleware.on_player_text(player, text.clone(), data.clone()) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
             }
@@ -91,10 +77,10 @@ impl MiddlewareRegistry {
         &mut self,
         player: Player,
         command: String,
-        data: &Arc<Mutex<dyn GameData>>,
+        data: Arc<T>,
     ) -> bool {
         for middleware in &mut self.middlewares {
-            match middleware.on_player_command_text(player, command.clone(), data) {
+            match middleware.on_player_command_text(player, command.clone(), data.clone()) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
             }
@@ -109,7 +95,7 @@ impl MiddlewareRegistry {
         response: i32,
         list_item: i32,
         input_text: String,
-        data: &Arc<Mutex<dyn GameData>>,
+        data: Arc<T>,
     ) -> bool {
         for middleware in &mut self.middlewares {
             match middleware.on_dialog_response(
@@ -118,7 +104,7 @@ impl MiddlewareRegistry {
                 response,
                 list_item,
                 input_text.clone(),
-                data,
+                data.clone(),
             ) {
                 EventResult::Continue => continue,
                 EventResult::Stop | EventResult::Block => return false,
@@ -128,7 +114,7 @@ impl MiddlewareRegistry {
     }
 }
 
-impl Default for MiddlewareRegistry {
+impl<T: GameData> Default for MiddlewareRegistry<T> {
     fn default() -> Self {
         Self::new()
     }
